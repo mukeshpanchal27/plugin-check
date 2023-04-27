@@ -278,6 +278,7 @@
 	 *
 	 * @since n.e.x.t
 	 *
+	 *
 	 * @param {string} file     The file name for the results.
 	 * @param {Object} errors   The file errors.
 	 * @param {Object} warnings The file warnings.
