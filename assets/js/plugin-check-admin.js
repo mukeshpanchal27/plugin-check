@@ -172,14 +172,50 @@
 	 * @param {Object} data The response data.
 	 */
 	async function runChecks( data ) {
+		let isSuccessMessage = true;
 		for ( let i = 0; i < data.checks.length; i++ ) {
 			try {
 				const results = await runCheck( data.plugin, data.checks[ i ] );
+				const errorsLength = Object.values( results.errors ).length;
+				const warningsLength = Object.values( results.errors ).length;
+				if (
+					isSuccessMessage &&
+					( errorsLength > 0 || warningsLength > 0 )
+				) {
+					isSuccessMessage = false;
+				}
 				renderResults( results );
 			} catch ( e ) {
 				// Ignore for now.
 			}
 		}
+
+		renderResultsMessage( isSuccessMessage );
+	}
+
+	/**
+	 * Renders result message.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {bool} isSuccessMessage Whether the message is a success message.
+	 */
+	function renderResultsMessage( isSuccessMessage ) {
+		let messageType = 'success';
+		let messageText = pluginCheck.successMessage;
+
+		if ( ! isSuccessMessage ) {
+			messageType = 'error';
+			messageText = pluginCheck.errorMessage;
+		}
+
+		resultsContainer.innerHTML += renderTemplate(
+			'plugin-check-results-complete',
+			{
+				type: messageType,
+				message: messageText,
+			}
+		);
 	}
 
 	/**
@@ -252,7 +288,6 @@
 	 */
 	function renderResults( results ) {
 		const { errors, warnings } = results;
-
 		// Render errors and warnings for files.
 		for ( const file in errors ) {
 			if ( warnings[ file ] ) {
@@ -267,10 +302,6 @@
 		for ( const file in warnings ) {
 			renderFileResults( file, [], warnings[ file ] );
 		}
-
-		resultsContainer.innerHTML += renderTemplate(
-			'plugin-check-results-complete'
-		);
 	}
 
 	/**
