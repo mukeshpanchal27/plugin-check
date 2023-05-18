@@ -198,7 +198,7 @@
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {bool} isSuccessMessage Whether the message is a success message.
+	 * @param {boolean} isSuccessMessage Whether the message is a success message.
 	 */
 	function renderResultsMessage( isSuccessMessage ) {
 		let messageType = 'success';
