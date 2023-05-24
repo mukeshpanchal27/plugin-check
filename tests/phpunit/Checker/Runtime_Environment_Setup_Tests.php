@@ -1,101 +1,174 @@
 <?php
 /**
- * Tests for the Checks class.
+ * Tests for the Plugin_Request_Utility class.
  *
  * @package plugin-check
  */
 
-use WordPress\Plugin_Check\Checker\Runtime_Environment_Setup;
+use WordPress\Plugin_Check\Checker\AJAX_Runner;
+use WordPress\Plugin_Check\Checker\CLI_Runner;
+use WordPress\Plugin_Check\Test_Data\Runtime_Check;
 use WordPress\Plugin_Check\Test_Utils\Traits\With_Mock_Filesystem;
+use WordPress\Plugin_Check\Utilities\Plugin_Request_Utility;
 
-class Runtime_Environment_Setup_Tests extends WP_UnitTestCase {
+class Plugin_Request_Utility_Tests extends WP_UnitTestCase {
 
 	use With_Mock_Filesystem;
 
-	public function test_setup() {
-		global $wp_filesystem, $wpdb, $table_prefix;
-
-		$this->set_up_mock_filesystem();
-
-		$runtime_setup = new Runtime_Environment_Setup();
-		$runtime_setup->setup();
-
-		$this->assertTrue( 0 <= strpos( $wpdb->last_query, $table_prefix . 'pc_' ) );
-		$this->assertTrue( $wp_filesystem->exists( WP_CONTENT_DIR . '/object-cache.php' ) );
-		$this->assertSame( file_get_contents( WP_PLUGIN_CHECK_PLUGIN_DIR_PATH . 'object-cache.copy.php' ), $wp_filesystem->get_contents( WP_CONTENT_DIR . '/object-cache.php' ) );
+	public function tear_down() {
+		// Force reset the database prefix after runner prepare method called.
+		global $wpdb, $table_prefix;
+		$wpdb->set_prefix( $table_prefix );
+		parent::tear_down();
 	}
 
-	public function test_cleanup() {
-		global $wp_filesystem, $wpdb, $table_prefix;
+	public function test_get_plugin_basename_from_input() {
+		$plugin = Plugin_Request_Utility::get_plugin_basename_from_input( 'plugin-check' );
 
-		$this->set_up_mock_filesystem();
-
-		$runtime_setup = new Runtime_Environment_Setup();
-		$runtime_setup->setup();
-
-		// Simulate file exists by setting constant found in object-cache.php.
-		define( 'WP_PLUGIN_CHECK_OBJECT_CACHE_DROPIN_VERSION', 1 );
-
-		$runtime_setup->cleanup();
-
-		$this->assertTrue( 0 <= strpos( $wpdb->last_query, $table_prefix . 'pc_' ) );
-		$this->assertFalse( $wp_filesystem->exists( WP_CONTENT_DIR . '/object-cache.php' ) );
+		$this->assertSame( plugin_basename( WP_PLUGIN_CHECK_MAIN_FILE ), $plugin );
 	}
 
-	public function test_setup_with_existing_object_cache() {
-		global $wp_filesystem, $wpdb, $table_prefix;
+	public function test_get_plugin_basename_from_input_with_empty_input() {
+		$this->expectException( 'Exception' );
+		$this->expectExceptionMessage( 'Invalid plugin slug: Plugin slug must not be empty.' );
 
-		$this->set_up_mock_filesystem();
-
-		// Simulate a different object-cache.php.
-		$dummy_file_content = '<?php /* Empty object-cache.php drop-in file. */';
-		$wp_filesystem->put_contents( WP_CONTENT_DIR . '/object-cache.php', $dummy_file_content );
-
-		$runtime_setup = new Runtime_Environment_Setup();
-		$runtime_setup->setup();
-
-		$this->assertTrue( 0 <= strpos( $wpdb->last_query, $table_prefix . 'pc_' ) );
-		$this->assertTrue( $wp_filesystem->exists( WP_CONTENT_DIR . '/object-cache.php' ) );
-		$this->assertSame( $dummy_file_content, $wp_filesystem->get_contents( WP_CONTENT_DIR . '/object-cache.php' ) );
+		Plugin_Request_Utility::get_plugin_basename_from_input( '' );
 	}
 
-	public function test_cleanup_with_existing_object_cache() {
-		global $wp_filesystem, $wpdb, $table_prefix;
+	public function test_get_plugin_basename_from_input_with_invalid_input() {
+		$this->expectException( 'Exception' );
+		$this->expectExceptionMessage( 'Invalid plugin slug: Plugin with slug invalid is not installed.' );
 
-		$this->set_up_mock_filesystem();
-
-		// Simulate a different object-cache.php.
-		$dummy_file_content = '<?php /* Empty object-cache.php drop-in file. */';
-		$wp_filesystem->put_contents( WP_CONTENT_DIR . '/object-cache.php', $dummy_file_content );
-
-		$runtime_setup = new Runtime_Environment_Setup();
-		$runtime_setup->setup();
-		$runtime_setup->cleanup();
-
-		$this->assertTrue( 0 <= strpos( $wpdb->last_query, $table_prefix . 'pc_' ) );
-		$this->assertTrue( $wp_filesystem->exists( WP_CONTENT_DIR . '/object-cache.php' ) );
-		$this->assertSame( $dummy_file_content, $wp_filesystem->get_contents( WP_CONTENT_DIR . '/object-cache.php' ) );
+		Plugin_Request_Utility::get_plugin_basename_from_input( 'invalid' );
 	}
 
-	public function test_can_setup_runtime_environment() {
-		$this->set_up_mock_filesystem();
+	public function test_initialize_runner_with_cli() {
+		$_SERVER['argv'] = array(
+			'wp',
+			'plugin',
+			'check',
+			'plugin-check',
+		);
 
-		$runtime_setup = new Runtime_Environment_Setup();
+		Plugin_Request_Utility::initialize_runner();
 
-		$this->assertTrue( $runtime_setup->can_setup_runtime_environment() );
+		do_action( 'muplugins_loaded' );
+
+		$runner = Plugin_Request_Utility::get_runner();
+
+		unset( $_SERVER['argv'] );
+
+		$this->assertInstanceOf( CLI_Runner::class, $runner );
 	}
 
-	public function test_can_setup_runtime_environment_with_existing_object_cache() {
-		global $wp_filesystem;
+	public function test_initialize_runner_with_ajax() {
+		add_filter( 'wp_doing_ajax', '__return_true' );
+		$_REQUEST['action'] = 'plugin_check_run_checks';
+		$_REQUEST['plugin'] = 'plugin-check';
+
+		Plugin_Request_Utility::initialize_runner();
+
+		do_action( 'muplugins_loaded' );
+
+		$runner = Plugin_Request_Utility::get_runner();
+
+		$this->assertInstanceOf( AJAX_Runner::class, $runner );
+	}
+
+	public function test_destroy_runner_with_cli() {
+		global $wpdb, $table_prefix, $wp_actions;
 
 		$this->set_up_mock_filesystem();
 
-		// Simulate a different object-cache.php.
-		$dummy_file_content = '<?php /* Empty object-cache.php drop-in file. */';
-		$wp_filesystem->put_contents( WP_CONTENT_DIR . '/object-cache.php', $dummy_file_content );
+		$_SERVER['argv'] = array(
+			'wp',
+			'plugin',
+			'check',
+			'plugin-check',
+			'--checks=runtime_check',
+		);
 
-		$runtime_setup = new Runtime_Environment_Setup();
+		add_filter(
+			'wp_plugin_check_checks',
+			function( $checks ) {
+				return array(
+					'runtime_check' => new Runtime_Check(),
+				);
+			}
+		);
 
-		$this->assertFalse( $runtime_setup->can_setup_runtime_environment() );
+		$muplugins_loaded = $wp_actions['muplugins_loaded'];
+		unset( $wp_actions['muplugins_loaded'] );
+
+		Plugin_Request_Utility::initialize_runner();
+
+		do_action( 'muplugins_loaded' );
+
+		// Determine if one of the Universal_Runtume_Preparation was run.
+		$prepared = has_filter( 'option_active_plugins' );
+
+		Plugin_Request_Utility::destroy_runner();
+
+		// Determine if the cleanup function was run.
+		$cleanup = ! has_filter( 'option_active_plugins' );
+		$runner  = Plugin_Request_Utility::get_runner();
+
+		unset( $_SERVER['argv'] );
+		$wp_actions['muplugins_loaded'] = $muplugins_loaded;
+		$wpdb->set_prefix( $table_prefix );
+
+		$this->assertTrue( $prepared );
+		$this->assertTrue( $cleanup );
+		$this->assertNull( $runner );
+	}
+
+	public function test_destroy_runner_with_ajax() {
+		global $wpdb, $table_prefix, $wp_actions;
+
+		$this->set_up_mock_filesystem();
+
+		add_filter( 'wp_doing_ajax', '__return_true' );
+		$_REQUEST['action'] = 'plugin_check_run_checks';
+		$_REQUEST['plugin'] = 'plugin-check';
+		$_REQUEST['checks'] = array( 'runtime_check' );
+
+		add_filter(
+			'wp_plugin_check_checks',
+			function( $checks ) {
+				return array(
+					'runtime_check' => new Runtime_Check(),
+				);
+			}
+		);
+
+		$muplugins_loaded = $wp_actions['muplugins_loaded'];
+		unset( $wp_actions['muplugins_loaded'] );
+
+		Plugin_Request_Utility::initialize_runner();
+
+		do_action( 'muplugins_loaded' );
+
+		// Determine if one of the Universal_Runtume_Preparation was run.
+		$prepared = has_filter( 'option_active_plugins' );
+
+		Plugin_Request_Utility::destroy_runner();
+
+		// Determine if the cleanup function was run.
+		$cleanup = ! has_filter( 'option_active_plugins' );
+		$runner  = Plugin_Request_Utility::get_runner();
+
+		$wpdb->set_prefix( $table_prefix );
+		$wp_actions['muplugins_loaded'] = $muplugins_loaded;
+
+		$this->assertTrue( $prepared );
+		$this->assertTrue( $cleanup );
+		$this->assertNull( $runner );
+	}
+
+	public function test_destroy_runner_with_no_runner() {
+		Plugin_Request_Utility::destroy_runner();
+		$runner = Plugin_Request_Utility::get_runner();
+
+		$this->assertNull( $runner );
 	}
 }
