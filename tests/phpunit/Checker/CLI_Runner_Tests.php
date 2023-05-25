@@ -5,13 +5,20 @@
  * @package plugin-check
  */
 
+use WordPress\Plugin_Check\Checker\AJAX_Runner;
 use WordPress\Plugin_Check\Checker\Check_Result;
-use WordPress\Plugin_Check\Checker\CLI_Runner;
 use WordPress\Plugin_Check\Test_Data\Empty_Check;
 use WordPress\Plugin_Check\Test_Data\Error_Check;
 use WordPress\Plugin_Check\Test_Data\Runtime_Check;
+use WordPress\Plugin_Check\Test_Utils\Traits\With_Mock_Filesystem;
 
-class CLI_Runner_Tests extends WP_UnitTestCase {
+class AJAX_Runner_Tests extends WP_UnitTestCase {
+
+	use With_Mock_Filesystem;
+
+	public function set_up() {
+		$this->set_up_mock_filesystem();
+	}
 
 	public function tear_down() {
 		// Force reset the database prefix after runner prepare method called.
@@ -21,22 +28,30 @@ class CLI_Runner_Tests extends WP_UnitTestCase {
 	}
 
 	public function test_is_plugin_check_returns_true() {
-		$_SERVER['argv'] = array(
-			'wp',
-			'plugin',
-			'check',
-			'hello-dolly',
-		);
+		// Mock the AJAX request.
+		add_filter( 'wp_doing_ajax', '__return_true' );
+		$_REQUEST['action'] = 'plugin_check_run_checks';
 
-		$runner = new CLI_Runner();
+		$runner = new AJAX_Runner();
 
 		$this->assertTrue( $runner->is_plugin_check() );
 	}
 
 	public function test_is_plugin_check_returns_false() {
-		$_SERVER['argv'] = array();
+		// Mock the AJAX request.
+		add_filter( 'wp_doing_ajax', '__return_true' );
+		$_REQUEST['action'] = 'a_different_ajax_request';
 
-		$runner = new CLI_Runner();
+		$runner = new AJAX_Runner();
+
+		$this->assertFalse( $runner->is_plugin_check() );
+	}
+
+	public function test_is_plugin_check_returns_false_not_ajax() {
+		// Mock the AJAX request.
+		add_filter( 'wp_doing_ajax', '__return_false' );
+
+		$runner = new AJAX_Runner();
 
 		$this->assertFalse( $runner->is_plugin_check() );
 	}
@@ -44,19 +59,16 @@ class CLI_Runner_Tests extends WP_UnitTestCase {
 	public function test_prepare_with_runtime_check() {
 		global $wp_actions;
 
-		$_SERVER['argv'] = array(
-			'wp',
-			'plugin',
-			'check',
-			'plugin-check',
-			'--checks=runtime-check',
-		);
+		add_filter( 'wp_doing_ajax', '__return_true' );
+		$_REQUEST['action'] = 'plugin_check_run_checks';
+		$_REQUEST['plugin'] = 'plugin-check';
+		$_REQUEST['checks'] = array( 'runtime_check' );
 
 		add_filter(
 			'wp_plugin_check_checks',
 			function( $checks ) {
 				return array(
-					'runtime-check' => new Runtime_Check(),
+					'runtime_check' => new Runtime_Check(),
 				);
 			}
 		);
@@ -64,7 +76,7 @@ class CLI_Runner_Tests extends WP_UnitTestCase {
 		$muplugins_loaded = $wp_actions['muplugins_loaded'];
 		unset( $wp_actions['muplugins_loaded'] );
 
-		$runner  = new CLI_Runner();
+		$runner  = new AJAX_Runner();
 		$cleanup = $runner->prepare();
 
 		$wp_actions['muplugins_loaded'] = $muplugins_loaded;
@@ -84,24 +96,21 @@ class CLI_Runner_Tests extends WP_UnitTestCase {
 	}
 
 	public function test_prepare_with_static_check() {
-		$_SERVER['argv'] = array(
-			'wp',
-			'plugin',
-			'check',
-			'plugin-check',
-			'--checks=empty-check',
-		);
+		add_filter( 'wp_doing_ajax', '__return_true' );
+		$_REQUEST['action'] = 'plugin_check_run_checks';
+		$_REQUEST['plugin'] = 'plugin-check';
+		$_REQUEST['checks'] = array( 'empty_check' );
 
 		add_filter(
 			'wp_plugin_check_checks',
 			function( $checks ) {
 				return array(
-					'empty-check' => new Empty_Check(),
+					'empty_check' => new Empty_Check(),
 				);
 			}
 		);
 
-		$runner  = new CLI_Runner();
+		$runner  = new AJAX_Runner();
 		$cleanup = $runner->prepare();
 
 		$this->assertIsCallable( $cleanup );
@@ -119,24 +128,21 @@ class CLI_Runner_Tests extends WP_UnitTestCase {
 	}
 
 	public function test_run() {
-		$_SERVER['argv'] = array(
-			'wp',
-			'plugin',
-			'check',
-			'plugin-check',
-			'--checks=empty-check',
-		);
+		add_filter( 'wp_doing_ajax', '__return_true' );
+		$_REQUEST['action'] = 'plugin_check_run_checks';
+		$_REQUEST['plugin'] = 'plugin-check';
+		$_REQUEST['checks'] = array( 'empty_check' );
 
 		add_filter(
 			'wp_plugin_check_checks',
 			function( $checks ) {
 				return array(
-					'empty-check' => new WordPress\Plugin_Check\Test_Data\Empty_Check(),
+					'empty_check' => new WordPress\Plugin_Check\Test_Data\Empty_Check(),
 				);
 			}
 		);
 
-		$runner = new CLI_Runner();
+		$runner = new AJAX_Runner();
 		$runner->prepare();
 		$results = $runner->run();
 
@@ -146,24 +152,21 @@ class CLI_Runner_Tests extends WP_UnitTestCase {
 	}
 
 	public function test_run_with_errors() {
-		$_SERVER['argv'] = array(
-			'wp',
-			'plugin',
-			'check',
-			'plugin-check',
-			'--checks=error-check',
-		);
+		add_filter( 'wp_doing_ajax', '__return_true' );
+		$_REQUEST['action'] = 'plugin_check_run_checks';
+		$_REQUEST['plugin'] = 'plugin-check';
+		$_REQUEST['checks'] = array( 'error_check' );
 
 		add_filter(
 			'wp_plugin_check_checks',
 			function( $checks ) {
 				return array(
-					'error-check' => new Error_Check(),
+					'error_check' => new Error_Check(),
 				);
 			}
 		);
 
-		$runner = new CLI_Runner();
+		$runner = new AJAX_Runner();
 		$runner->prepare();
 		$results = $runner->run();
 
@@ -178,18 +181,15 @@ class CLI_Runner_Tests extends WP_UnitTestCase {
 		$this->expectException( 'Exception' );
 		$this->expectExceptionMessage( 'Invalid plugin: The plugin set does not match the original request parameter.' );
 
-		$_SERVER['argv'] = array(
-			'wp',
-			'plugin',
-			'check',
-			'plugin-check',
-			'--checks=error-check',
-		);
+		add_filter( 'wp_doing_ajax', '__return_true' );
+		$_REQUEST['action'] = 'plugin_check_run_checks';
+		$_REQUEST['plugin'] = 'plugin-check';
+		$_REQUEST['checks'] = array( 'empty_check' );
 
 		$muplugins_loaded = $wp_actions['muplugins_loaded'];
 		unset( $wp_actions['muplugins_loaded'] );
 
-		$runner = new CLI_Runner();
+		$runner = new AJAX_Runner();
 
 		$wp_actions['muplugins_loaded'] = $muplugins_loaded;
 
@@ -205,18 +205,15 @@ class CLI_Runner_Tests extends WP_UnitTestCase {
 		$this->expectException( 'Exception' );
 		$this->expectExceptionMessage( 'Invalid checks: The checks to run do not match the original request.' );
 
-		$_SERVER['argv'] = array(
-			'wp',
-			'plugin',
-			'check',
-			'plugin-check',
-			'--checks=error-check',
-		);
+		add_filter( 'wp_doing_ajax', '__return_true' );
+		$_REQUEST['action'] = 'plugin_check_run_checks';
+		$_REQUEST['plugin'] = 'plugin-check';
+		$_REQUEST['checks'] = array( 'empty_check' );
 
 		$muplugins_loaded = $wp_actions['muplugins_loaded'];
 		unset( $wp_actions['muplugins_loaded'] );
 
-		$runner = new CLI_Runner();
+		$runner = new AJAX_Runner();
 
 		$wp_actions['muplugins_loaded'] = $muplugins_loaded;
 
