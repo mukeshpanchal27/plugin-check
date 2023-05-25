@@ -270,11 +270,12 @@ abstract class Abstract_Check_Runner implements Check_Runner {
 		// Include file to use is_plugin_active() in CLI context.
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
+		$runtime     = new Runtime_Environment_Setup();
 		$check_slugs = $this->get_check_slugs();
 		$check_flags = Check_Repository::TYPE_STATIC;
 
 		// Check if conditions are met in order to perform Runtime Checks.
-		if ( $this->initialized_early && is_plugin_active( $this->get_plugin_basename() ) ) {
+		if ( $runtime->can_setup_runtime_environment() && is_plugin_active( $this->get_plugin_basename() ) ) {
 			$check_flags = Check_Repository::TYPE_ALL;
 		}
 
