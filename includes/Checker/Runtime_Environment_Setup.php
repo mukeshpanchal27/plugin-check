@@ -113,8 +113,9 @@ final class Runtime_Environment_Setup {
 
 		require_once ABSPATH . '/wp-admin/includes/upgrade.php';
 
-		if ( ! $wp_filesystem || ! WP_Filesystem() ) {
-			return false;
+		if ( ! $wp_filesystem ) {
+			require_once ABSPATH . '/wp-admin/includes/file.php';
+			WP_Filesystem();
 		}
 
 		// Check if the object-cache.php file exists.
