@@ -42,9 +42,9 @@ class Enqueued_Styles_Scope_Check extends Abstract_Runtime_Check implements With
 	 * Plugin style counter.
 	 *
 	 * @since n.e.x.t
-	 * @var array
+	 * @var int
 	 */
-	private $plugin_style_count = array();
+	private $plugin_style_count = 0;
 
 	/**
 	 * Runs this preparation step for the environment and returns a cleanup function.
@@ -113,8 +113,6 @@ class Enqueued_Styles_Scope_Check extends Abstract_Runtime_Check implements With
 			}
 		);
 
-		print_r( $this->plugin_styles );
-		print_r( $this->plugin_style_count );
 		if ( ! empty( $this->plugin_styles ) ) {
 			$url_count = count( $this->get_urls() );
 			foreach ( $this->plugin_styles as $plugin_style ) {
@@ -210,11 +208,8 @@ class Enqueued_Styles_Scope_Check extends Abstract_Runtime_Check implements With
 
 			$this->plugin_styles[ $handle ] = array(
 				'path'  => $style_path,
-				'count' => ++$this->plugin_style_count[ $handle ],
+				'count' => ++$this->plugin_style_count,
 			);
-			print_r( $this->plugin_styles );
-			print_r( $handle );
-			print_r( $this->plugin_style_count );
 		}
 	}
 
