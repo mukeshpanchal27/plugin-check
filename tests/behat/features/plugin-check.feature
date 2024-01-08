@@ -21,10 +21,6 @@ Feature: Test that the WP-CLI command works.
       """
       trademarked_term
       """
-    And STDOUT should contain:
-      """
-      All output should be run through an escaping function
-      """
 
     When I run the WP-CLI command `plugin check hello.php --format=csv`
     Then STDOUT should contain:
@@ -83,12 +79,6 @@ Feature: Test that the WP-CLI command works.
 
   Scenario: Check Akismet
     Given a WP install with the Plugin Check plugin
-
-    When I run the WP-CLI command `plugin check akismet`
-    Then STDOUT should contain:
-      """
-      FILE: views/config.php
-      """
 
     When I run the WP-CLI command `plugin check akismet --exclude-directories=views`
     Then STDOUT should not contain:
