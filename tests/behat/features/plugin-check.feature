@@ -156,6 +156,34 @@ Feature: Test that the WP-CLI command works.
       FILE: subdirectory/bar.php
       """
 
+  Scenario: Exclude files in plugin check
+    Given a WP install with the Plugin Check plugin
+    And an empty wp-content/plugins/foo-plugin directory
+    And an empty wp-content/plugins/foo-plugin/subdirectory directory
+    And a wp-content/plugins/foo-plugin/foo-plugin.php file:
+      """
+      <?php
+      /**
+       * Plugin Name: Foo Plugin
+       * Plugin URI:  https://example.com
+       * Description:
+       * Version:     0.1.0
+       * Author:
+       * Author URI:
+       * License:     GPL-2.0+
+       * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+       * Text Domain: foo-plugin
+       * Domain Path: /languages
+       */
+
+      """
+    And a wp-content/plugins/foo-plugin/bar.php file:
+      """
+      <?php
+      $value = 1;
+      echo $value;
+      """
+
   Scenario: Perform runtime check
     Given a WP install with the Plugin Check plugin
     And a wp-content/plugins/foo-single.php file:
