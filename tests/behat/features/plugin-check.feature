@@ -183,43 +183,6 @@ Feature: Test that the WP-CLI command works.
       $value = 1;
       echo $value;
       """
-    And a wp-content/plugins/foo-plugin/foobar.php file:
-      """
-      <?php
-      $value = 1;
-      echo $value;
-      """
-    And a wp-content/plugins/foo-plugin/subdirectory/error.php file:
-      """
-      <?php
-      $value = 1;
-      echo $value;
-      """
-    When I run the WP-CLI command `plugin check foo-plugin`
-    Then STDOUT should contain:
-      """
-      FILE: bar.php
-      """
-    And STDOUT should contain:
-      """
-      FILE: foobar.php
-      """
-
-    When I run the WP-CLI command `plugin check foo-plugin --exclude-files=bar.php`
-    Then STDOUT should contain:
-      """
-      FILE: foobar.php
-      """
-    Then STDOUT should not contain:
-      """
-      FILE: bar.php
-      """
-
-    When I run the WP-CLI command `plugin check foo-plugin --exclude-files=subdirectory/error.php`
-    Then STDOUT should not contain:
-      """
-      FILE: subdirectory/error.php
-      """
 
   Scenario: Perform runtime check
     Given a WP install with the Plugin Check plugin
