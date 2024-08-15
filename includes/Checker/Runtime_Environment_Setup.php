@@ -51,6 +51,7 @@ final class Runtime_Environment_Setup {
 			// Do not send post-install notification email, see https://github.com/WordPress/plugin-check/issues/424.
 			add_filter( 'pre_wp_mail', '__return_false' );
 
+			update_option( 'siteurl', get_option ( 'siteurl' ) );
 			wp_install(
 				'Plugin Check',
 				'plugincheck',
@@ -58,7 +59,6 @@ final class Runtime_Environment_Setup {
 				false
 			);
 
-			update_option( 'siteurl', get_option ( 'siteurl' ) );
 			remove_filter( 'pre_wp_mail', '__return_false' );
 
 			// Activate the same plugins in the test environment.
