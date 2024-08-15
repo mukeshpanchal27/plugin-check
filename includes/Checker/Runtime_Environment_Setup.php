@@ -45,9 +45,12 @@ final class Runtime_Environment_Setup {
 				'populate_options',
 				static function () use ( $permalink_structure ) {
 					add_option( 'permalink_structure', $permalink_structure );
-					add_option( 'siteurl', get_option( 'siteurl' ) );
 				}
 			);
+			echo '<pre>';
+			print_r( $_SERVER );
+			echo '</pre>';
+			die;
 
 			// Do not send post-install notification email, see https://github.com/WordPress/plugin-check/issues/424.
 			add_filter( 'pre_wp_mail', '__return_false' );
