@@ -51,7 +51,11 @@ final class Runtime_Environment_Setup {
 			// Do not send post-install notification email, see https://github.com/WordPress/plugin-check/issues/424.
 			add_filter( 'pre_wp_mail', '__return_false' );
 
-			update_option( 'siteurl', get_option ( 'siteurl' ) );
+			if ( ! isset( $_SERVER['HTTP_HOST'] ) ) {
+				$site_url = get_option( 'siteurl' );
+				$_SERVER['HTTP_HOST'] = parse_url( $site_url, PHP_URL_HOST );
+			}
+
 			wp_install(
 				'Plugin Check',
 				'plugincheck',
