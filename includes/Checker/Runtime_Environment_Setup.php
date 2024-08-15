@@ -58,6 +58,7 @@ final class Runtime_Environment_Setup {
 				false
 			);
 
+			update_option( 'siteurl', get_option ( 'siteurl' ) );
 			remove_filter( 'pre_wp_mail', '__return_false' );
 
 			// Activate the same plugins in the test environment.
