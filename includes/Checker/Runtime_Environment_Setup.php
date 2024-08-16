@@ -47,10 +47,10 @@ final class Runtime_Environment_Setup {
 					add_option( 'permalink_structure', $permalink_structure );
 				}
 			);
-			echo '<pre>';
-			print_r( $_SERVER );
-			echo '</pre>';
-			die;
+			if ( ! isset( $_SERVER['HTTP_HOST'] ) ) {
+				$site_url             = get_option( 'siteurl' );
+				$_SERVER['HTTP_HOST'] = preg_replace( '#^https?://#', '', rtrim( $site_url, '/' ) );
+			}
 
 			// Do not send post-install notification email, see https://github.com/WordPress/plugin-check/issues/424.
 			add_filter( 'pre_wp_mail', '__return_false' );
