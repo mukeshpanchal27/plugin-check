@@ -77,7 +77,9 @@ final class Runtime_Environment_Setup {
 				'Plugin Check',
 				'plugincheck',
 				'demo@plugincheck.test',
-				false
+				false,
+				'',
+				'password'
 			);
 
 			remove_filter( 'pre_wp_mail', '__return_false' );
