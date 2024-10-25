@@ -13,8 +13,6 @@ use WordPress\Plugin_Check\Checker\Check_Categories;
 use WordPress\Plugin_Check\Checker\Check_Repository;
 use WordPress\Plugin_Check\Checker\CLI_Runner;
 use WordPress\Plugin_Check\Checker\Default_Check_Repository;
-use WordPress\Plugin_Check\Checker\Runtime_Check;
-use WordPress\Plugin_Check\Checker\Runtime_Environment_Setup;
 use WordPress\Plugin_Check\Plugin_Context;
 use WordPress\Plugin_Check\Utilities\Plugin_Request_Utility;
 use WP_CLI;
@@ -192,23 +190,14 @@ final class Plugin_Check_Command {
 			);
 		}
 
-		$checks_to_run = array();
 		try {
 			$runner->set_experimental_flag( $options['include-experimental'] );
 			$runner->set_check_slugs( $checks );
 			$runner->set_plugin( $plugin );
 			$runner->set_categories( $categories );
 			$runner->set_slug( $options['slug'] );
-
-			$checks_to_run = $runner->get_checks_to_run();
 		} catch ( Exception $error ) {
 			WP_CLI::error( $error->getMessage() );
-		}
-
-		if ( $this->has_runtime_check( $checks_to_run ) ) {
-			WP_CLI::line( __( 'Setting up runtime environment.', 'plugin-check' ) );
-			$runtime_setup = new Runtime_Environment_Setup();
-			$runtime_setup->set_up();
 		}
 
 		$result = false;
@@ -218,20 +207,10 @@ final class Plugin_Check_Command {
 		} catch ( Exception $error ) {
 			Plugin_Request_Utility::destroy_runner();
 
-			if ( isset( $runtime_setup ) ) {
-				$runtime_setup->clean_up();
-				WP_CLI::line( __( 'Cleaning up runtime environment.', 'plugin-check' ) );
-			}
-
 			WP_CLI::error( $error->getMessage() );
 		}
 
 		Plugin_Request_Utility::destroy_runner();
-
-		if ( isset( $runtime_setup ) ) {
-			$runtime_setup->clean_up();
-			WP_CLI::line( __( 'Cleaning up runtime environment.', 'plugin-check' ) );
-		}
 
 		// Get errors and warnings from the results.
 		$errors = array();
@@ -640,24 +619,6 @@ final class Plugin_Check_Command {
 
 		WP_CLI::line();
 		WP_CLI::line();
-	}
-
-	/**
-	 * Checks for a Runtime_Check in a list of checks.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $checks An array of Check instances.
-	 * @return bool True if a Runtime_Check exists in the array, false if not.
-	 */
-	private function has_runtime_check( array $checks ) {
-		foreach ( $checks as $check ) {
-			if ( $check instanceof Runtime_Check ) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**
