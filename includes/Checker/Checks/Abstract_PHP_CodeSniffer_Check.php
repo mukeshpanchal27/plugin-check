@@ -58,6 +58,8 @@ abstract class Abstract_PHP_CodeSniffer_Check implements Static_Check {
 	/**
 	 * Amends the given result by running the check on the associated plugin.
 	 *
+	 * @SuppressWarnings(PHPMD.NPathComplexity)
+	 *
 	 * @since 1.0.0
 	 *
 	 * @param Check_Result $result The check result to amend, including the plugin context to check.
