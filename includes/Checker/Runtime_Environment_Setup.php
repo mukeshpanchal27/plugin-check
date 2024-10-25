@@ -68,6 +68,11 @@ final class Runtime_Environment_Setup {
 				define( 'WP_DEFAULT_THEME', $active_theme );
 			}
 
+			// The `wp_install()` function requires the `get_user_by()` function to be loaded.
+			if ( ! function_exists( 'get_user_by' ) ) {
+				require_once $this->get_runtime_content_path() . 'get-user-by.php';
+			}
+
 			wp_install(
 				'Plugin Check',
 				'plugincheck',
@@ -193,5 +198,21 @@ final class Runtime_Environment_Setup {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Gets the path to the Plugin Check's runtime content directory.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The path to the runtime content directory.
+	 */
+	private function get_runtime_content_path(): string {
+		if ( ! defined( 'WP_PLUGIN_CHECK_PLUGIN_DIR_PATH' ) ) {
+			$plugins_dir = defined( 'WP_PLUGIN_DIR' ) ? WP_PLUGIN_DIR : WP_CONTENT_DIR . '/plugins';
+			return $plugins_dir . '/plugin-check/runtime-content/';
+		}
+
+		return WP_PLUGIN_CHECK_PLUGIN_DIR_PATH . 'runtime-content/';
 	}
 }
