@@ -79,6 +79,12 @@ abstract class Abstract_PHP_CodeSniffer_Check implements Static_Check {
 			);
 		}
 
+		if ( ! class_exists( '\PHP_CodeSniffer\Config' ) ) {
+			throw new Exception(
+				__( 'Unable to find PHPCS Config class.', 'plugin-check' )
+			);
+		}
+
 		// Backup the original command line arguments.
 		$orig_cmd_args = $_SERVER['argv'] ?? '';
 
