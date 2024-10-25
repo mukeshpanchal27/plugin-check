@@ -31,6 +31,9 @@ final class Runtime_Environment_Setup {
 		// Get the existing active plugins.
 		$active_plugins = get_option( 'active_plugins' );
 
+		// Get the existing active theme.
+		$active_theme = get_option( 'stylesheet' );
+
 		// Get the existing permalink structure.
 		$permalink_structure = get_option( 'permalink_structure' );
 
@@ -59,6 +62,11 @@ final class Runtime_Environment_Setup {
 
 			// Do not send post-install notification email, see https://github.com/WordPress/plugin-check/issues/424.
 			add_filter( 'pre_wp_mail', '__return_false' );
+
+			// The `wp_install()` function requires the WP_DEFAULT_THEME constant to be set.
+			if ( ! defined( 'WP_DEFAULT_THEME' ) ) {
+				define( 'WP_DEFAULT_THEME', $active_theme );
+			}
 
 			wp_install(
 				'Plugin Check',
