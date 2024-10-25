@@ -70,6 +70,8 @@ final class Runtime_Environment_Setup {
 
 			// The `wp_install()` function requires some pluggable functions like `get_user_by()` to be loaded.
 			if ( ! function_exists( 'get_user_by' ) ) {
+				// Override `wp_get_current_user()`.
+				require_once $this->get_runtime_content_path() . 'wp-get-current-user.php';
 				require_once ABSPATH . '/wp-includes/pluggable.php';
 			}
 
@@ -198,5 +200,21 @@ final class Runtime_Environment_Setup {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Gets the path to the Plugin Check's runtime content directory.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The path to the runtime content directory.
+	 */
+	private function get_runtime_content_path(): string {
+		if ( ! defined( 'WP_PLUGIN_CHECK_PLUGIN_DIR_PATH' ) ) {
+			$plugins_dir = defined( 'WP_PLUGIN_DIR' ) ? WP_PLUGIN_DIR : WP_CONTENT_DIR . '/plugins';
+			return $plugins_dir . '/plugin-check/runtime-content/';
+		}
+
+		return WP_PLUGIN_CHECK_PLUGIN_DIR_PATH . 'runtime-content/';
 	}
 }
