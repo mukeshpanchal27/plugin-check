@@ -26,6 +26,8 @@ final class Runtime_Environment_Setup {
 	public function set_up() {
 		global $wpdb, $table_prefix, $wp_filesystem;
 
+		require_once ABSPATH . '/wp-admin/includes/upgrade.php';
+
 		// Get the existing site URL.
 		$site_url = get_option( 'siteurl' );
 
@@ -197,8 +199,6 @@ final class Runtime_Environment_Setup {
 	 * @param string[] $active_plugins The actual site's list of plugin basenames.
 	 */
 	private function install_wordpress( string $active_siteurl, string $active_theme, array $active_plugins ): void {
-		require_once ABSPATH . '/wp-admin/includes/upgrade.php';
-
 		if ( ! isset( $_SERVER['HTTP_HOST'] ) ) {
 			$site_url             = $active_siteurl;
 			$_SERVER['HTTP_HOST'] = preg_replace( '#^https?://#', '', rtrim( $site_url, '/' ) );
