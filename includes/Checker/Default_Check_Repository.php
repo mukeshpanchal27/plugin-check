@@ -20,7 +20,7 @@ class Default_Check_Repository extends Empty_Check_Repository {
 	 * If the class is instantiated before plugins are loaded, this will be set to false.
 	 * This way the checks will be re-initialized once plugins have been loaded, and only then it is set to true.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 * @var bool
 	 */
 	protected $fully_initialized;
