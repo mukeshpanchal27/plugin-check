@@ -31,7 +31,7 @@ class Default_Check_Repository extends Empty_Check_Repository {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->fully_initialized = did_action( 'plugins_loaded' );
+		$this->fully_initialized = did_action( 'plugins_loaded' ) === 0;
 		$this->register_default_checks();
 	}
 
