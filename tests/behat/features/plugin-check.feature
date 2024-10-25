@@ -556,14 +556,14 @@ Feature: Test that the WP-CLI command works.
       ExampleRuntimeCheck.ForbiddenScript,WARNING
       """
 
-    # Same again, to verify object-cache.php was properly cleared again
-    When I run the WP-CLI command `plugin check foo-sample --fields=code,type --format=csv --require=./wp-content/plugins/plugin-check/cli.php`
+    # Same again but without requiring the cli.php file, to verify object-cache.php was properly cleared again
+    When I run the WP-CLI command `plugin check foo-sample --fields=code,type --format=csv`
     Then STDOUT should contain:
       """
       WordPress.WP.EnqueuedResourceParameters.NotInFooter,WARNING
       """
 
-    And STDOUT should contain:
+    And STDOUT should not contain:
       """
       ExampleRuntimeCheck.ForbiddenScript,WARNING
       """
