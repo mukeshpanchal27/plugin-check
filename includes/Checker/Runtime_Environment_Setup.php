@@ -26,7 +26,8 @@ final class Runtime_Environment_Setup {
 	public function set_up() {
 		global $wpdb, $table_prefix, $wp_filesystem;
 
-		require_once ABSPATH . '/wp-admin/includes/upgrade.php';
+		// Get the existing site URL.
+		$site_url = get_option( 'siteurl' );
 
 		// Get the existing active plugins.
 		$active_plugins = get_option( 'active_plugins' );
@@ -69,37 +70,7 @@ final class Runtime_Environment_Setup {
 				}
 			);
 
-			if ( ! isset( $_SERVER['HTTP_HOST'] ) ) {
-				$site_url             = get_option( 'siteurl' );
-				$_SERVER['HTTP_HOST'] = preg_replace( '#^https?://#', '', rtrim( $site_url, '/' ) );
-			}
-
-			// Do not send post-install notification email, see https://github.com/WordPress/plugin-check/issues/424.
-			add_filter( 'pre_wp_mail', '__return_false' );
-
-			// The `wp_install()` function requires the WP_DEFAULT_THEME constant to be set.
-			if ( ! defined( 'WP_DEFAULT_THEME' ) ) {
-				define( 'WP_DEFAULT_THEME', $active_theme );
-			}
-
-			// The `wp_install()` function requires some pluggable functions like `get_user_by()` to be loaded.
-			if ( ! function_exists( 'get_user_by' ) ) {
-				// Override `wp_get_current_user()`.
-				require_once $this->get_runtime_content_path() . 'wp-get-current-user.php';
-				require_once ABSPATH . '/wp-includes/pluggable.php';
-			}
-
-			wp_install(
-				'Plugin Check',
-				'plugincheck',
-				'demo@plugincheck.test',
-				false
-			);
-
-			remove_filter( 'pre_wp_mail', '__return_false' );
-
-			// Activate the same plugins in the test environment.
-			update_option( 'active_plugins', $active_plugins );
+			$this->install_wordpress( $site_url, $active_theme, $active_plugins );
 		}
 
 		// Restore the old prefix.
@@ -214,6 +185,51 @@ final class Runtime_Environment_Setup {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Installs WordPress, while providing tweaks to allow for early execution of the install process.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string   $active_siteurl The actual site's site URL.
+	 * @param string   $active_theme   The actual site's theme slug.
+	 * @param string[] $active_plugins The actual site's list of plugin basenames.
+	 */
+	private function install_wordpress( string $active_siteurl, string $active_theme, array $active_plugins ): void {
+		require_once ABSPATH . '/wp-admin/includes/upgrade.php';
+
+		if ( ! isset( $_SERVER['HTTP_HOST'] ) ) {
+			$site_url             = $active_siteurl;
+			$_SERVER['HTTP_HOST'] = preg_replace( '#^https?://#', '', rtrim( $site_url, '/' ) );
+		}
+
+		// Do not send post-install notification email, see https://github.com/WordPress/plugin-check/issues/424.
+		add_filter( 'pre_wp_mail', '__return_false' );
+
+		// The `wp_install()` function requires the WP_DEFAULT_THEME constant to be set.
+		if ( ! defined( 'WP_DEFAULT_THEME' ) ) {
+			define( 'WP_DEFAULT_THEME', $active_theme );
+		}
+
+		// The `wp_install()` function requires some pluggable functions like `get_user_by()` to be loaded.
+		if ( ! function_exists( 'get_user_by' ) ) {
+			// Override `wp_get_current_user()`.
+			require_once $this->get_runtime_content_path() . 'wp-get-current-user.php';
+			require_once ABSPATH . '/wp-includes/pluggable.php';
+		}
+
+		wp_install(
+			'Plugin Check',
+			'plugincheck',
+			'demo@plugincheck.test',
+			false
+		);
+
+		remove_filter( 'pre_wp_mail', '__return_false' );
+
+		// Activate the same plugins in the test environment.
+		update_option( 'active_plugins', $active_plugins );
 	}
 
 	/**
