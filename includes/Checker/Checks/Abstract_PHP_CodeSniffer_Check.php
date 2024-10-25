@@ -75,13 +75,13 @@ abstract class Abstract_PHP_CodeSniffer_Check implements Static_Check {
 			include_once $autoloader;
 		}
 
-		if ( ! class_exists( '\PHP_CodeSniffer\Runner' ) ) {
+		if ( ! class_exists( Runner::class ) ) {
 			throw new Exception(
 				__( 'Unable to find PHPCS Runner class.', 'plugin-check' )
 			);
 		}
 
-		if ( ! class_exists( '\PHP_CodeSniffer\Config' ) ) {
+		if ( ! class_exists( Config::class ) ) {
 			throw new Exception(
 				__( 'Unable to find PHPCS Config class.', 'plugin-check' )
 			);
@@ -236,14 +236,14 @@ abstract class Abstract_PHP_CodeSniffer_Check implements Static_Check {
 	 * @since 1.0.0
 	 */
 	private function reset_php_codesniffer_config() {
-		if ( class_exists( '\PHP_CodeSniffer\Config' ) ) {
+		if ( class_exists( Config::class ) ) {
 			/*
 			 * PHPStan ignore reason: PHPStan raised an issue because we can't
 			 * use class in ReflectionClass.
 			 *
 			 * @phpstan-ignore-next-line
 			 */
-			$reflected_phpcs_config = new \ReflectionClass( '\PHP_CodeSniffer\Config' );
+			$reflected_phpcs_config = new \ReflectionClass( Config::class );
 			$overridden_defaults    = $reflected_phpcs_config->getProperty( 'overriddenDefaults' );
 			$overridden_defaults->setAccessible( true );
 			$overridden_defaults->setValue( $reflected_phpcs_config, array() );
