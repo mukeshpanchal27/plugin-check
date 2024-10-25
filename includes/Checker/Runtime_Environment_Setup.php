@@ -192,7 +192,7 @@ final class Runtime_Environment_Setup {
 	/**
 	 * Installs WordPress, while providing tweaks to allow for early execution of the install process.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @param string   $active_siteurl The actual site's site URL.
 	 * @param string   $active_theme   The actual site's theme slug.

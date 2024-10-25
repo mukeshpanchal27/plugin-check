@@ -490,7 +490,7 @@ abstract class Abstract_Check_Runner implements Check_Runner {
 	/**
 	 * Initializes the runtime environment so that runtime checks can be run against a separate set of database tables.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return callable[] Array of cleanup functions to run after the process has completed.
 	 */
