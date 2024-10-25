@@ -51,6 +51,20 @@ final class Runtime_Environment_Setup {
 			add_action(
 				'populate_options',
 				static function () use ( $permalink_structure ) {
+					/*
+					 * If pretty permalinks are not used, temporarily enable them by setting a permalink structure, to
+					 * avoid flushing rewrite rules in wp_install_maybe_enable_pretty_permalinks().
+					 * Afterwards, on the 'wp_install' action, set the original (empty) permalink structure.
+					 */
+					if ( ! $permalink_structure ) {
+						add_action(
+							'wp_install',
+							static function () use ( $permalink_structure ) {
+								update_option( 'permalink_structure', $permalink_structure );
+							}
+						);
+						$permalink_structure = '/%postname%/';
+					}
 					add_option( 'permalink_structure', $permalink_structure );
 				}
 			);
