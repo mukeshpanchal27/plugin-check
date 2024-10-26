@@ -15,12 +15,44 @@ namespace WordPress\Plugin_Check\Checker;
 class Default_Check_Repository extends Empty_Check_Repository {
 
 	/**
+	 * True if the class was fully initialized.
+	 *
+	 * If the class is instantiated before plugins are loaded, this will be set to false.
+	 * This way the checks will be re-initialized once plugins have been loaded, and only then it is set to true.
+	 *
+	 * @since 1.3.0
+	 * @var bool
+	 */
+	protected $fully_initialized;
+
+	/**
 	 * Initializes checks.
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		$this->fully_initialized = did_action( 'plugins_loaded' ) > 0;
 		$this->register_default_checks();
+	}
+
+	/**
+	 * Returns an array of checks.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $flags The check type flag.
+	 * @return Check_Collection Check collection providing an indexed array of check instances.
+	 */
+	public function get_checks( $flags = self::TYPE_ALL ) {
+		// Once plugins have been loaded, re-initialize the checks.
+		if ( ! $this->fully_initialized && did_action( 'plugins_loaded' ) ) {
+			$this->fully_initialized = true;
+			$this->runtime_checks    = array();
+			$this->static_checks     = array();
+			$this->register_default_checks();
+		}
+
+		return parent::get_checks( $flags );
 	}
 
 	/**
