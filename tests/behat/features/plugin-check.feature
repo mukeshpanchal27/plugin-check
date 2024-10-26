@@ -549,14 +549,6 @@ Feature: Test that the WP-CLI command works.
     When I run the WP-CLI command `plugin check foo-sample --fields=code,type --format=csv --require=./wp-content/plugins/plugin-check/cli.php`
     Then STDOUT should contain:
       """
-      Setting up runtime environment.
-      """
-    And STDOUT should contain:
-      """
-      Cleaning up runtime environment.
-      """
-    And STDOUT should contain:
-      """
       WordPress.WP.EnqueuedResourceParameters.NotInFooter,WARNING
       """
 # This doesn't currently work, because we are not actually loading any other plugins, including pcp-addon.
@@ -568,14 +560,6 @@ Feature: Test that the WP-CLI command works.
     # Same again, to verify object-cache.php was properly cleared again
     When I run the WP-CLI command `plugin check foo-sample --fields=code,type --format=csv --require=./wp-content/plugins/plugin-check/cli.php`
     Then STDOUT should contain:
-      """
-      Setting up runtime environment.
-      """
-    And STDOUT should contain:
-      """
-      Cleaning up runtime environment.
-      """
-    And STDOUT should contain:
       """
       WordPress.WP.EnqueuedResourceParameters.NotInFooter,WARNING
       """

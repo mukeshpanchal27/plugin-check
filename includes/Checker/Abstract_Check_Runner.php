@@ -310,8 +310,6 @@ abstract class Abstract_Check_Runner implements Check_Runner {
 	 * @throws Exception Thrown exception when preparation fails.
 	 */
 	final public function prepare() {
-		$cleanup_functions = array();
-
 		if ( $this->initialized_early ) {
 			/*
 			 * When initialized early, plugins are not loaded yet when this method is called.
@@ -334,9 +332,9 @@ abstract class Abstract_Check_Runner implements Check_Runner {
 			$initialize_runtime = $this->has_runtime_check( $this->get_checks_to_run() );
 		}
 
+		$cleanup_functions = array();
 		if ( $initialize_runtime ) {
-			$preparation         = new Universal_Runtime_Preparation( $this->get_check_context() );
-			$cleanup_functions[] = $preparation->prepare();
+			$cleanup_functions = $this->initialize_runtime();
 		}
 
 		if ( $this->delete_plugin_folder ) {
@@ -487,6 +485,18 @@ abstract class Abstract_Check_Runner implements Check_Runner {
 		}
 
 		return $collection->to_map();
+	}
+
+	/**
+	 * Initializes the runtime environment so that runtime checks can be run against a separate set of database tables.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @return callable[] Array of cleanup functions to run after the process has completed.
+	 */
+	protected function initialize_runtime(): array {
+		$preparation = new Universal_Runtime_Preparation( $this->get_check_context() );
+		return array( $preparation->prepare() );
 	}
 
 	/**
