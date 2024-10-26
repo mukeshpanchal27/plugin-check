@@ -611,3 +611,42 @@ Feature: Test that the WP-CLI command works.
 	  """
 	  Success: Checks complete. No errors found.
 	  """
+
+  Scenario: Check Contributors value in readme in markdown format
+    Given a WP install with the Plugin Check plugin
+    And a wp-content/plugins/foo-sample/foo-sample.php file:
+      """
+      <?php
+      /**
+       * Plugin Name: Foo Sample
+       * Plugin URI: https://foo-sample.com
+       * Description: Custom plugin.
+       * Version: 0.1.0
+       * Author: WordPress Performance Team
+       * Author URI: https://make.wordpress.org/performance/
+       * License: GPL-2.0+
+       * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+       */
+
+      """
+    And a wp-content/plugins/foo-sample/README.md file:
+      """
+      # Foo Sample #
+
+      **Contributors:** johndoe
+      **Requires at least:** 6.0
+      **Tested up to:** 6.6
+      **Requires PHP:** 7.2
+      **Stable tag:** 0.1.0
+      **License:** GPL-2.0+
+      **License URI:** http://www.gnu.org/licenses/gpl-2.0.txt
+
+      This is a short description of the plugin.
+
+      """
+
+    When I run the WP-CLI command `plugin check foo-sample`
+    Then STDOUT should not contain:
+	    """
+	    readme_invalid_contributors
+	    """
