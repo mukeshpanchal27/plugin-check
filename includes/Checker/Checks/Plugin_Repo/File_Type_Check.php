@@ -301,7 +301,7 @@ class File_Type_Check extends Abstract_File_Check {
 	/**
 	 * Looks for library core files and amends the given result with an error if found.
 	 *
-	 * @since 1.2.0
+	 * @since 1.3.0
 	 *
 	 * @param Check_Result $result The check result to amend, including the plugin context to check.
 	 * @param array        $files  List of absolute file paths.
@@ -317,7 +317,7 @@ class File_Type_Check extends Abstract_File_Check {
 			'jquery.hoverintent(?!\/)',
 			'jquery.imgareaselect(?!\/)',
 			'jquery.hotkeys(?!\/)',
-			'jquery.ba-serializeobject(?!\/)', // spellchecker:disable-line
+			'jquery.ba-serializeobject(?!\/)', // spellchecker:disable-line.
 			'jquery.query-object(?!\/)',
 			'jquery.suggest(?!\/)',
 			'polyfill(\.min)?\.js(?!\/)',
@@ -382,7 +382,7 @@ class File_Type_Check extends Abstract_File_Check {
 	 * @return string Description.
 	 */
 	public function get_description(): string {
-		return __( 'Detects the usage of hidden and compressed files, VCS directories, application files,badly named files and library core files.', 'plugin-check' );
+		return __( 'Detects the usage of hidden and compressed files, VCS directories, application files, badly named files and library core files.', 'plugin-check' );
 	}
 
 	/**
