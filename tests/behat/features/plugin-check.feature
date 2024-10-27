@@ -234,7 +234,7 @@ Feature: Test that the WP-CLI command works.
       """
       FILE: foobar.php
       """
-    Then STDOUT should not contain:
+    And STDOUT should not contain:
       """
       FILE: bar.php
       """
