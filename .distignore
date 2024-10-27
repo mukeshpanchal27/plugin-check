@@ -17,6 +17,8 @@ tests
 .distignore
 .editorconfig
 .eslintrc.js
+.gherkin-lintignore
+.gherkin-lintrc
 .gitattributes
 .gitignore
 .nvmrc
