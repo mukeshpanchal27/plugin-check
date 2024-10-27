@@ -8,6 +8,7 @@ on:
     # Only run if feature files are changed.
     paths:
       - '.github/workflows/gherkin-lint.yml'
+      - 'package-lock.json'
       - '**.feature'
   pull_request:
     branches:
@@ -17,6 +18,7 @@ on:
     # Only run if feature files are changed.
     paths:
       - '.github/workflows/gherkin-lint.yml'
+      - 'package-lock.json'
       - '**.feature'
     types:
       - opened
