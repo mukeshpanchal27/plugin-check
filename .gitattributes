@@ -12,6 +12,7 @@
 
 /.editorconfig export-ignore
 /.eslintrc.js export-ignore
+/.gherkin-lintignore export-ignore
 /.gherkin-lintrc export-ignore
 /.nvmrc export-ignore
 /.wp-env.json export-ignore
