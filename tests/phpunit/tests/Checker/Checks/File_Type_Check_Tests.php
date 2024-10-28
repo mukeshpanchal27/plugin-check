@@ -138,11 +138,16 @@ class File_Type_Check_Tests extends WP_UnitTestCase {
 		$errors = $check_result->get_errors();
 
 		$this->assertNotEmpty( $errors );
-		$this->assertEquals( 1, $check_result->get_error_count() );
+		$this->assertEquals( 2, $check_result->get_error_count() );
 
 		// Check for core PHPMailer.
 		$this->assertArrayHasKey( 0, $errors['PHPMailer.php'] );
 		$this->assertArrayHasKey( 0, $errors['PHPMailer.php'][0] );
 		$this->assertCount( 1, wp_list_filter( $errors['PHPMailer.php'][0][0], array( 'code' => 'library_core_files' ) ) );
+
+		// Check for core jquery.
+		$this->assertArrayHasKey( 0, $errors['jquery.js'] );
+		$this->assertArrayHasKey( 0, $errors['jquery.js'][0] );
+		$this->assertCount( 1, wp_list_filter( $errors['jquery.js'][0][0], array( 'code' => 'library_core_files' ) ) );
 	}
 }
