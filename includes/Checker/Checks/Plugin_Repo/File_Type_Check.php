@@ -317,7 +317,7 @@ class File_Type_Check extends Abstract_File_Check {
 			'jquery.hoverintent(?!\/)',
 			'jquery.imgareaselect(?!\/)',
 			'jquery.hotkeys(?!\/)',
-			'jquery.ba-serializeobject(?!\/)', // spellchecker:disable-line.
+			'jquery.ba-serializeobject(?!\/)',
 			'jquery.query-object(?!\/)',
 			'jquery.suggest(?!\/)',
 			'polyfill(\.min)?\.js(?!\/)',
