@@ -234,7 +234,7 @@ Feature: Test that the WP-CLI command works.
       """
       FILE: foobar.php
       """
-    Then STDOUT should not contain:
+    And STDOUT should not contain:
       """
       FILE: bar.php
       """
@@ -549,58 +549,38 @@ Feature: Test that the WP-CLI command works.
     When I run the WP-CLI command `plugin check foo-sample --fields=code,type --format=csv --require=./wp-content/plugins/plugin-check/cli.php`
     Then STDOUT should contain:
       """
-      Setting up runtime environment.
-      """
-    And STDOUT should contain:
-      """
-      Cleaning up runtime environment.
-      """
-    And STDOUT should contain:
-      """
       WordPress.WP.EnqueuedResourceParameters.NotInFooter,WARNING
       """
-# This doesn't currently work, because we are not actually loading any other plugins, including pcp-addon.
-#    And STDOUT should contain:
-#      """
-#      ExampleRuntimeCheck.ForbiddenScript,WARNING
-#      """
+    And STDOUT should contain:
+      """
+      ExampleRuntimeCheck.ForbiddenScript,WARNING
+      """
 
-    # Same again, to verify object-cache.php was properly cleared again
-    When I run the WP-CLI command `plugin check foo-sample --fields=code,type --format=csv --require=./wp-content/plugins/plugin-check/cli.php`
+    # Same again but without requiring the cli.php file, to verify object-cache.php was properly cleared again
+    When I run the WP-CLI command `plugin check foo-sample --fields=code,type --format=csv`
     Then STDOUT should contain:
       """
-      Setting up runtime environment.
-      """
-    And STDOUT should contain:
-      """
-      Cleaning up runtime environment.
-      """
-    And STDOUT should contain:
-      """
       WordPress.WP.EnqueuedResourceParameters.NotInFooter,WARNING
       """
 
-    # This doesn't currently work, because we are not actually loading any other plugins, including pcp-addon.
-#    And STDOUT should contain:
-#      """
-#      ExampleRuntimeCheck.ForbiddenScript,WARNING
-#      """
+    And STDOUT should not contain:
+      """
+      ExampleRuntimeCheck.ForbiddenScript,WARNING
+      """
 
-    # This doesn't currently work.
     # Run one runtime check from PCP and one from pcp-addon.
-#    When I run the WP-CLI command `plugin check foo-sample --checks=non_blocking_scripts,example_runtime --fields=code,type --format=csv --require=./wp-content/plugins/plugin-check/cli.php`
-#    Then STDOUT should contain:
-#      """
-#      ExampleRuntimeCheck.ForbiddenScript,WARNING
-#      """
+    When I run the WP-CLI command `plugin check foo-sample --checks=non_blocking_scripts,example_runtime --fields=code,type --format=csv --require=./wp-content/plugins/plugin-check/cli.php`
+    Then STDOUT should contain:
+      """
+      ExampleRuntimeCheck.ForbiddenScript,WARNING
+      """
 
-    # This doesn't currently work, because we are not actually loading any other plugins, including pcp-addon.
     # Run only the runtime check from pcp-addon, no others
-#    When I run the WP-CLI command `plugin check foo-sample --checks=example_runtime --fields=code,type --format=csv --require=./wp-content/plugins/plugin-check/cli.php`
-#    Then STDOUT should contain:
-#      """
-#      ExampleRuntimeCheck.ForbiddenScript,WARNING
-#      """
+    When I run the WP-CLI command `plugin check foo-sample --checks=example_runtime --fields=code,type --format=csv --require=./wp-content/plugins/plugin-check/cli.php`
+    Then STDOUT should contain:
+      """
+      ExampleRuntimeCheck.ForbiddenScript,WARNING
+      """
 
   Scenario: Check custom single file plugin that has no errors or warnings
     Given a WP install with the Plugin Check plugin
