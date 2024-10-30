@@ -12,6 +12,7 @@ use WordPress\Plugin_Check\Checker\Check_Result;
 use WordPress\Plugin_Check\Checker\Checks\Abstract_File_Check;
 use WordPress\Plugin_Check\Traits\Amend_Check_Result;
 use WordPress\Plugin_Check\Traits\Find_Readme;
+use WordPress\Plugin_Check\Traits\License_Utils;
 use WordPress\Plugin_Check\Traits\Stable_Check;
 use WordPressdotorg\Plugin_Directory\Readme\Parser;
 
@@ -27,6 +28,7 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 	use Amend_Check_Result;
 	use Find_Readme;
 	use Stable_Check;
+	use License_Utils;
 
 	/**
 	 * Gets the categories for the check.
@@ -319,11 +321,11 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 
 			return;
 		} else {
-			$license = $this->normalize_licenses( $license );
+			$license = $this->get_normalized_license( $license );
 		}
 
 		// Test for a valid SPDX license identifier.
-		if ( ! preg_match( '/^([a-z0-9\-\+\.]+)(\sor\s([a-z0-9\-\+\.]+))*$/i', $license ) ) {
+		if ( ! $this->is_license_valid_identifier( $license ) ) {
 			$this->add_result_warning_for_file(
 				$result,
 				__( '<strong>Your plugin has an invalid license declared.</strong><br>Please update your readme with a valid SPDX license identifier.', 'plugin-check' ),
@@ -350,11 +352,11 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 				9
 			);
 		} else {
-			$plugin_license = $this->normalize_licenses( $matches_license[1] );
+			$plugin_license = $this->get_normalized_license( $matches_license[1] );
 		}
 
 		// Checks for a valid license in Plugin Header.
-		if ( ! empty( $plugin_license ) && ! preg_match( '/GPL|GNU|MIT|FreeBSD|New BSD|BSD-3-Clause|BSD 3 Clause|OpenLDAP|Expat|Apache|MPL20/im', $plugin_license ) ) {
+		if ( ! empty( $plugin_license ) && ! $this->is_license_gpl_compatible( $plugin_license ) ) {
 			$this->add_result_error_for_file(
 				$result,
 				__( '<strong>Your plugin has an invalid license declared in Plugin Header.</strong><br>Please update your readme with a valid GPL license identifier. It is necessary to declare the license of this plugin. You can do this by using the fields available both in the plugin readme and in the plugin headers.', 'plugin-check' ),
@@ -380,50 +382,6 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 				9
 			);
 		}
-	}
-
-	/**
-	 * Normalize licenses to compare them.
-	 *
-	 * @since 1.0.2
-	 *
-	 * @param string $license The license to normalize.
-	 * @return string
-	 */
-	private function normalize_licenses( $license ) {
-		$license = trim( $license );
-		$license = str_replace( '  ', ' ', $license );
-
-		// Remove some strings at the end.
-		$strings_to_remove = array(
-			'.',
-			'http://www.gnu.org/licenses/old-licenses/gpl-2.0.html',
-			'https://www.gnu.org/licenses/old-licenses/gpl-2.0.html',
-			'https://www.gnu.org/licenses/gpl-3.0.html',
-			' or later',
-			'-or-later',
-			'+',
-		);
-		foreach ( $strings_to_remove as $string_to_remove ) {
-			$position = strrpos( $license, $string_to_remove );
-
-			if ( false !== $position ) {
-				// To remove from the end, the string to remove must be at the end.
-				if ( $position + strlen( $string_to_remove ) === strlen( $license ) ) {
-					$license = trim( substr( $license, 0, $position ) );
-				}
-			}
-		}
-
-		// Versions.
-		$license = str_replace( '-', '', $license );
-		$license = str_replace( 'GNU General Public License (GPL)', 'GPL', $license );
-		$license = str_replace( 'GNU General Public License', 'GPL', $license );
-		$license = str_replace( ' version ', 'v', $license );
-		$license = preg_replace( '/GPL\s*[-|\.]*\s*[v]?([0-9])(\.[0])?/i', 'GPL$1', $license, 1 );
-		$license = str_replace( '.', '', $license );
-
-		return $license;
 	}
 
 	/**
