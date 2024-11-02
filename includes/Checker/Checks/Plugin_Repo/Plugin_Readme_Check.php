@@ -147,7 +147,7 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 				9
 			);
 		} else {
-			$plugin_data = get_plugin_data( $result->plugin()->main_file() );
+			$plugin_data = get_plugin_data( $result->plugin()->main_file(), true, false );
 
 			$plugin_readme_name = html_entity_decode( $parser->name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
 			$plugin_header_name = html_entity_decode( $plugin_data['Name'], ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
