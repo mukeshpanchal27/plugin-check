@@ -159,20 +159,14 @@ final class Admin_AJAX {
 			wp_send_json_error( $valid_request, 403 );
 		}
 
-		// Set the new prefix.
-		$old_prefix = $wpdb->set_prefix( $table_prefix . 'pc_' );
-
 		$message = __( 'Runtime environment was not prepared, cleanup was not run.', 'plugin-check' );
 
-		// Test if the runtime environment tables exist.
-		if ( $wpdb->posts === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->posts ) ) || defined( 'WP_PLUGIN_CHECK_OBJECT_CACHE_DROPIN_VERSION' ) ) {
+		// Test if the runtime environment is prepared (and thus needs cleanup).
+		if ( $this->is_runtime_environment_prepared() ) {
 			$runtime = new Runtime_Environment_Setup();
 			$runtime->clean_up();
 			$message = __( 'Runtime environment cleanup successful.', 'plugin-check' );
 		}
-
-		// Restore the old prefix.
-		$wpdb->set_prefix( $old_prefix );
 
 		wp_send_json_success(
 			array(
@@ -284,6 +278,32 @@ final class Admin_AJAX {
 				'warnings' => $results->get_warnings(),
 			)
 		);
+	}
+
+	/**
+	 * Tests if the runtime environment is prepared.
+	 *
+	 * This returns true when the plugin's object-cache.php drop-in is active in the current request and/or when the
+	 * custom runtime environment database tables are present.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @return bool True if the runtime environment is prepared, false if not.
+	 */
+	private function is_runtime_environment_prepared() {
+		if ( defined( 'WP_PLUGIN_CHECK_OBJECT_CACHE_DROPIN_VERSION' ) ) {
+			return true;
+		}
+
+		// Set the custom prefix to check for the runtime environment tables.
+		$old_prefix = $wpdb->set_prefix( $table_prefix . 'pc_' );
+
+		$tables_present = $wpdb->posts === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->posts ) );
+
+		// Restore the old prefix.
+		$wpdb->set_prefix( $old_prefix );
+
+		return $tables_present;
 	}
 
 	/**
