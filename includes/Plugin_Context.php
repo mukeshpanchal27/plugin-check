@@ -130,7 +130,7 @@ class Plugin_Context {
 		if ( is_dir( $this->main_file ) ) {
 			return trailingslashit( $this->main_file ) . ltrim( $relative_path, '/' );
 		} else {
-			return trailingslashit( dirname( $this->main_file ) ) . ltrim( $relative_path, '/' );
+			return plugin_dir_path( $this->main_file ) . ltrim( $relative_path, '/' );
 		}
 	}
 
