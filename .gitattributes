@@ -15,6 +15,7 @@
 /.gherkin-lintignore export-ignore
 /.gherkin-lintrc export-ignore
 /.nvmrc export-ignore
+/.typos.toml export-ignore
 /.wp-env.json export-ignore
 /composer.lock export-ignore
 /package.json export-ignore

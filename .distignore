@@ -23,6 +23,7 @@ tests
 .gitignore
 .nvmrc
 .phpunit.result.cache
+.typos.toml
 .wp-env.json
 .wp-env.override.json
 behat.yml
