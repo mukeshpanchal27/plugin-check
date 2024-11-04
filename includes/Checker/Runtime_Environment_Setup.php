@@ -138,6 +138,37 @@ final class Runtime_Environment_Setup {
 	}
 
 	/**
+	 * Tests if the runtime environment is currently set up.
+	 *
+	 * This returns true when the plugin's object-cache.php drop-in is active in the current request and/or when the
+	 * custom runtime environment database tables are present.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @global wpdb   $wpdb         WordPress database abstraction object.
+	 * @global string $table_prefix The database table prefix.
+	 *
+	 * @return bool True if the runtime environment is set up, false if not.
+	 */
+	public function is_set_up() {
+		global $wpdb, $table_prefix;
+
+		if ( defined( 'WP_PLUGIN_CHECK_OBJECT_CACHE_DROPIN_VERSION' ) ) {
+			return true;
+		}
+
+		// Set the custom prefix to check for the runtime environment tables.
+		$old_prefix = $wpdb->set_prefix( $table_prefix . 'pc_' );
+
+		$tables_present = $wpdb->posts === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->posts ) );
+
+		// Restore the old prefix.
+		$wpdb->set_prefix( $old_prefix );
+
+		return $tables_present;
+	}
+
+	/**
 	 * Checks if the WordPress Environment can be set up for runtime checks.
 	 *
 	 * @since 1.0.0
