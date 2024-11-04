@@ -382,7 +382,7 @@ class File_Type_Check extends Abstract_File_Check {
 	 * @return string Description.
 	 */
 	public function get_description(): string {
-		return __( 'Detects the usage of hidden and compressed files, VCS directories, application files, badly named files and library core files.', 'plugin-check' );
+		return __( 'Detects the usage of hidden and compressed files, VCS directories, application files, badly named files and Library Core Files.', 'plugin-check' );
 	}
 
 	/**
