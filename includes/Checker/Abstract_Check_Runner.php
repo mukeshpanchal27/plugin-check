@@ -358,22 +358,12 @@ abstract class Abstract_Check_Runner implements Check_Runner {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @global wpdb   $wpdb         WordPress database abstraction object.
-	 * @global string $table_prefix The database table prefix.
-	 *
 	 * @return Check_Result An object containing all check results.
 	 */
 	final public function run() {
-		global $wpdb, $table_prefix;
 		$checks       = $this->get_checks_to_run();
 		$preparations = $this->get_shared_preparations( $checks );
 		$cleanups     = array();
-		$old_prefix   = null;
-
-		// Set the correct test database prefix if required.
-		if ( $this->has_runtime_check( $checks ) ) {
-			$old_prefix = $wpdb->set_prefix( $table_prefix . 'pc_' );
-		}
 
 		// Prepare all shared preparations.
 		foreach ( $preparations as $preparation ) {
@@ -387,11 +377,6 @@ abstract class Abstract_Check_Runner implements Check_Runner {
 			foreach ( $cleanups as $cleanup ) {
 				$cleanup();
 			}
-		}
-
-		// Restore the old prefix.
-		if ( $old_prefix ) {
-			$wpdb->set_prefix( $old_prefix );
 		}
 
 		return $results;
