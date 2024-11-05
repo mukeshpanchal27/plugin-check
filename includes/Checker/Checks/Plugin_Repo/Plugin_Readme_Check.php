@@ -632,7 +632,7 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 	 * @param string       $readme_file Readme file.
 	 */
 	private function check_for_contributors( Check_Result $result, string $readme_file ) {
-		$regex = '/Contributors\s?:(.*?)\R/';
+		$regex = '/Contributors\s?:(?:\*\*|\s)?(.*?)\R/';
 
 		$matches = array();
 
