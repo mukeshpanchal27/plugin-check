@@ -612,7 +612,6 @@ Feature: Test that the WP-CLI command works.
 	  Success: Checks complete. No errors found.
 	  """
 
-
   Scenario: Check for mismatched plugin name in non-English language setup
     Given a WP install with the Plugin Check plugin
     And a wp-content/plugins/foo-sample/foo-sample.php file:
@@ -720,4 +719,3 @@ Feature: Test that the WP-CLI command works.
 	    """
 	    readme_invalid_contributors
 	    """
-   
