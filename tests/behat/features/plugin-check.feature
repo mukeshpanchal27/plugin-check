@@ -234,7 +234,7 @@ Feature: Test that the WP-CLI command works.
       """
       FILE: foobar.php
       """
-    Then STDOUT should not contain:
+    And STDOUT should not contain:
       """
       FILE: bar.php
       """
@@ -612,6 +612,76 @@ Feature: Test that the WP-CLI command works.
 	  Success: Checks complete. No errors found.
 	  """
 
+
+  Scenario: Check for mismatched plugin name in non-English language setup
+    Given a WP install with the Plugin Check plugin
+    And a wp-content/plugins/foo-sample/foo-sample.php file:
+      """
+      <?php
+      /**
+       * Plugin Name: Foo Sample
+       * Plugin URI: https://foo-sample.com
+       * Description: Custom plugin.
+       * Version: 0.1.0
+       * Author: WordPress Performance Team
+       * Author URI: https://make.wordpress.org/performance/
+       * License: GPL-2.0+
+       * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+       */
+
+      """
+    And a wp-content/plugins/foo-sample/readme.txt file:
+      """
+      === Foo Sample ===
+
+      Contributors: johndoe
+      Tags: foo, sample
+      Tested up to: 6.5
+      Stable tag: 0.1.0
+      License: GPLv2 or later
+      License URI: http://www.gnu.org/licenses/gpl-2.0.html
+
+      Short description will be here.
+
+      == Description ==
+
+      Long description will be here.
+      """
+    And a wp-content/plugins/foo-sample/foo-sample-ne_NP.po file:
+      """
+      # Copyright (C) 2024 WordPress Performance Team
+      # This file is distributed under the GPLv2 or later.
+      msgid ""
+      msgstr ""
+      "Project-Id-Version: Foo Sample 0.1.0\n"
+      "Report-Msgid-Bugs-To: \n"
+      "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+      "Language-Team: LANGUAGE <LL@li.org>\n"
+      "MIME-Version: 1.0\n"
+      "Content-Type: text/plain; charset=UTF-8\n"
+      "Content-Transfer-Encoding: 8bit\n"
+      "POT-Creation-Date: \n"
+      "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+      "X-Generator: WP-CLI 2.11.0\n"
+      "Language: ne_NP\n"
+      "X-Domain: foo-sample\n"
+
+      #. Plugin Name of the plugin
+      #: foo-sample.php
+      msgid "Foo Sample"
+      msgstr "फू स्याम्पल"
+
+      """
+    And I run the WP-CLI command `language core install ne_NP`
+    And I run the WP-CLI command `i18n make-mo wp-content/plugins/foo-sample/foo-sample-ne_NP.po`
+    And I run the WP-CLI command `site switch-language ne_NP`
+
+    When I run the WP-CLI command `plugin check foo-sample`
+    Then STDOUT should not contain:
+	    """
+	    mismatched_plugin_name
+	    """
+
   Scenario: Check Contributors value in readme in markdown format
     Given a WP install with the Plugin Check plugin
     And a wp-content/plugins/foo-sample/foo-sample.php file:
@@ -650,3 +720,4 @@ Feature: Test that the WP-CLI command works.
 	    """
 	    readme_invalid_contributors
 	    """
+   

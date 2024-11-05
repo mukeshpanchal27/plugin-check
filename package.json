@@ -10,8 +10,9 @@
     "npm": ">=10.2.3"
   },
   "devDependencies": {
-    "@wordpress/env": "^10.10.0",
-    "@wordpress/scripts": "^30.3.0",
+    "@wordpress/env": "^10.11.0",
+    "@wordpress/scripts": "^30.4.0",
+    "gherkin-lint": "^4.2.4",
     "patch-package": "^8.0.0"
   },
   "scripts": {
@@ -19,6 +20,7 @@
     "wp-env": "wp-env",
     "lint-js": "wp-scripts lint-js",
     "format-js": "npm run lint-js -- --fix",
+    "lint-gherkin": "gherkin-lint",
     "phpstan": "wp-env run tests-cli --env-cwd=wp-content/plugins/$(basename \"$(pwd)\")/ composer run-script phpstan",
     "lint-php": "wp-env run tests-cli --env-cwd=wp-content/plugins/$(basename \"$(pwd)\")/ composer run-script lint",
     "format-php": "wp-env run tests-cli --env-cwd=wp-content/plugins/$(basename \"$(pwd)\")/ composer run-script format",
