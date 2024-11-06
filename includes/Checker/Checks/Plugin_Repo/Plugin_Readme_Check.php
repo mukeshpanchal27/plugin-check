@@ -326,7 +326,7 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 
 		// Test for a valid SPDX license identifier.
 		if ( ! $this->is_license_valid_identifier( $license ) ) {
-			$this->add_result_warning_for_file(
+			$this->add_result_error_for_file(
 				$result,
 				__( '<strong>Your plugin has an invalid license declared.</strong><br>Please update your readme with a valid SPDX license identifier.', 'plugin-check' ),
 				'invalid_license',
@@ -371,7 +371,7 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 
 		// Check different license types.
 		if ( ! empty( $plugin_license ) && ! empty( $license ) && $license !== $plugin_license ) {
-			$this->add_result_warning_for_file(
+			$this->add_result_error_for_file(
 				$result,
 				__( '<strong>Your plugin has a different license declared in the readme file and plugin header.</strong><br>Please update your readme with a valid GPL license identifier.', 'plugin-check' ),
 				'license_mismatch',
