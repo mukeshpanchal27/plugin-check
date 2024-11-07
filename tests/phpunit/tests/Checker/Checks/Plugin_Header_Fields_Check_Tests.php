@@ -59,7 +59,7 @@ class Plugin_Header_Fields_Check_Tests extends WP_UnitTestCase {
 		}
 	}
 
-	public function test_run_with_invalid_license() {
+	public function test_run_with_invalid_mpl1_license() {
 		$check         = new Plugin_Header_Fields_Check();
 		$check_context = new Check_Context( UNIT_TESTS_PLUGIN_DIR . 'test-plugin-plugin-readme-mpl1-license-with-errors/load.php' );
 		$check_result  = new Check_Result( $check_context );
@@ -70,6 +70,7 @@ class Plugin_Header_Fields_Check_Tests extends WP_UnitTestCase {
 
 		$this->assertNotEmpty( $errors );
 
+		// Check for invalid license.
 		$this->assertCount( 1, wp_list_filter( $errors['load.php'][0][0], array( 'code' => 'plugin_header_invalid_license' ) ) );
 	}
 }

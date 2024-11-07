@@ -22,8 +22,8 @@ use WordPress\Plugin_Check\Traits\Stable_Check;
  */
 class Plugin_Header_Fields_Check implements Static_Check {
 
-	use License_Utils;
 	use Amend_Check_Result;
+	use License_Utils;
 	use Stable_Check;
 
 	/**
