@@ -199,11 +199,25 @@ Feature: Test that the severity level in plugin check works.
       """
     And STDOUT should contain:
       """
-      WordPress.WP.AlternativeFunctions.rand_mt_rand,WARNING,10
+      WordPress.WP.AlternativeFunctions.rand_mt_rand,ERRORS_LOW_SEVERITY,5
       """
     And STDOUT should contain:
       """
-      WordPress.Security.EscapeOutput.OutputNotEscaped,WARNING,10
+      WordPress.Security.EscapeOutput.OutputNotEscaped,ERRORS_LOW_SEVERITY,5
+      """
+
+    When I run the WP-CLI command `plugin check foo-bar-wp --format=csv --fields=code,type,severity --warning-severity=7 --include-low-severity-warnings`
+    Then STDOUT should contain:
+      """
+      allow_unfiltered_uploads_detected,ERROR,7
+      """
+    And STDOUT should contain:
+      """
+      upgrade_notice_limit,WARNINGS_LOW_SEVERITY,5
+      """
+    And STDOUT should contain:
+      """
+      default_readme_text,WARNING,7
       """
 
     When I run the WP-CLI command `plugin check foo-bar-wp --format=csv --fields=code,type,severity --severity=10`
