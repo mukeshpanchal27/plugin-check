@@ -338,20 +338,12 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 			);
 		}
 
+		$plugin_license = '';
+
 		$pattern     = preg_quote( 'License', '/' );
 		$has_license = self::file_preg_match( "/(*ANYCRLF)^.*$pattern\s*:\s*(.*)$/im", array( $plugin_main_file ), $matches_license );
-		if ( ! $has_license ) {
-			$this->add_result_error_for_file(
-				$result,
-				__( '<strong>Your plugin has no license declared in Plugin Header.</strong><br>Please update your plugin header with a GPLv2 (or later) compatible license. It is necessary to declare the license of this plugin. You can do this by using the fields available both in the plugin readme and in the plugin headers.', 'plugin-check' ),
-				'no_license',
-				$plugin_main_file,
-				0,
-				0,
-				'https://developer.wordpress.org/plugins/wordpress-org/common-issues/#no-gpl-compatible-license-declared',
-				9
-			);
-		} else {
+
+		if ( $has_license ) {
 			$plugin_license = $this->get_normalized_license( $matches_license[1] );
 		}
 

@@ -67,6 +67,8 @@ class Plugin_Header_Fields_Check implements Static_Check {
 			'RequiresPHP'     => 'Requires PHP',
 			'UpdateURI'       => 'Update URI',
 			'RequiresPlugins' => 'Requires Plugins',
+			'License'         => 'License',
+			'LicenseURI'      => 'License URI',
 		);
 
 		$restricted_labels = array(
@@ -247,6 +249,19 @@ class Plugin_Header_Fields_Check implements Static_Check {
 					6
 				);
 			}
+		}
+
+		if ( empty( $plugin_header['License'] ) ) {
+			$this->add_result_error_for_file(
+				$result,
+				__( '<strong>Your plugin has no license declared in Plugin Header.</strong><br>Please update your plugin header with a GPLv2 (or later) compatible license.', 'plugin-check' ),
+				'plugin_header_no_license',
+				$plugin_main_file,
+				0,
+				0,
+				'https://developer.wordpress.org/plugins/wordpress-org/common-issues/#no-gpl-compatible-license-declared',
+				9
+			);
 		}
 
 		$found_headers = array();
