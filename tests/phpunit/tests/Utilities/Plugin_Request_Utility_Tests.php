@@ -19,10 +19,21 @@ class Plugin_Request_Utility_Tests extends WP_UnitTestCase {
 
 	use With_Mock_Filesystem;
 
+	/**
+	 * Storage for preparation cleanups that need to be run after a test.
+	 *
+	 * @var array
+	 */
+	private $cleanups = array();
+
 	public function tear_down() {
-		// Force reset the database prefix after runner prepare method called.
-		global $wpdb, $table_prefix;
-		$wpdb->set_prefix( $table_prefix );
+		if ( count( $this->cleanups ) > 0 ) {
+			$this->cleanups = array_reverse( $this->cleanups );
+			foreach ( $this->cleanups as $cleanup ) {
+				$cleanup();
+			}
+			$this->cleanups = array();
+		}
 		parent::tear_down();
 	}
 
@@ -61,6 +72,9 @@ class Plugin_Request_Utility_Tests extends WP_UnitTestCase {
 		);
 
 		Plugin_Request_Utility::initialize_runner();
+		$this->cleanups[] = function () {
+			Plugin_Request_Utility::destroy_runner();
+		};
 
 		do_action( 'muplugins_loaded' );
 
@@ -77,6 +91,9 @@ class Plugin_Request_Utility_Tests extends WP_UnitTestCase {
 		$_REQUEST['plugin'] = 'plugin-check';
 
 		Plugin_Request_Utility::initialize_runner();
+		$this->cleanups[] = function () {
+			Plugin_Request_Utility::destroy_runner();
+		};
 
 		do_action( 'muplugins_loaded' );
 
@@ -117,6 +134,9 @@ class Plugin_Request_Utility_Tests extends WP_UnitTestCase {
 		unset( $wp_actions['muplugins_loaded'] );
 
 		Plugin_Request_Utility::initialize_runner();
+		$this->cleanups[] = function () {
+			Plugin_Request_Utility::destroy_runner();
+		};
 
 		do_action( 'muplugins_loaded' );
 
@@ -161,6 +181,9 @@ class Plugin_Request_Utility_Tests extends WP_UnitTestCase {
 		unset( $wp_actions['muplugins_loaded'] );
 
 		Plugin_Request_Utility::initialize_runner();
+		$this->cleanups[] = function () {
+			Plugin_Request_Utility::destroy_runner();
+		};
 
 		do_action( 'muplugins_loaded' );
 
