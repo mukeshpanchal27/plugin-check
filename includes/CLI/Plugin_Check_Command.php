@@ -272,7 +272,7 @@ final class Plugin_Check_Command {
 			$file_results = $this->flatten_file_results( array(), $file_warnings );
 
 			if ( '' !== $error_severity || '' !== $warning_severity ) {
-				$file_results = $this->get_filtered_results_by_severity( $file_results, intval( $error_severity ), intval( $warning_severity ) );
+				$file_results = $this->get_filtered_results_by_severity( $file_results, intval( $error_severity ), intval( $warning_severity ), $include_low_severity_errors, $include_low_severity_warnings );
 			}
 
 			if ( ! empty( $file_results ) ) {

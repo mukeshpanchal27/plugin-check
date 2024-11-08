@@ -217,7 +217,7 @@ Feature: Test that the severity level in plugin check works.
       """
     And STDOUT should contain:
       """
-      default_readme_text,WARNING,7
+      default_readme_text,ERROR,7
       """
 
     When I run the WP-CLI command `plugin check foo-bar-wp --format=csv --fields=code,type,severity --severity=10`
