@@ -103,6 +103,31 @@ class I18n_Usage_Check extends Abstract_PHP_CodeSniffer_Check {
 			$error = false;
 		}
 
+		// Add documentation link.
+		switch ( $code ) {
+			case 'WordPress.WP.I18n.NonSingularStringLiteralDomain':
+			case 'WordPress.WP.I18n.NonSingularStringLiteralText':
+			case 'WordPress.WP.I18n.TooManyFunctionArgs':
+				$docs = __( 'https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/#basic-strings', 'plugin-check' );
+				break;
+
+			case 'WordPress.WP.I18n.NonSingularStringLiteralContext':
+				$docs = __( 'https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/#disambiguation-by-context', 'plugin-check' );
+				break;
+
+			case 'WordPress.WP.I18n.MissingTranslatorsComment':
+				$docs = __( 'https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/#descriptions', 'plugin-check' );
+				break;
+
+			case 'WordPress.WP.I18n.UnorderedPlaceholdersText':
+				$docs = __( 'https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/#variables', 'plugin-check' );
+				break;
+
+			default:
+				$docs = __( 'https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/', 'plugin-check' );
+				break;
+		}
+
 		parent::add_result_message_for_file( $result, $error, $message, $code, $file, $line, $column, $docs, $severity );
 	}
 }
