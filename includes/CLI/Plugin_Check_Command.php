@@ -115,7 +115,7 @@ final class Plugin_Check_Command {
 	 * : Include errors with lower severity than the threshold as other type.
 	 *
 	 * [--include-low-severity-warnings]
-	 * : Include errors with lower severity than the threshold as other type.
+	 * : Include warnings with lower severity than the threshold as other type.
 	 *
 	 * [--slug=<slug>]
 	 * : Slug to override the default.
