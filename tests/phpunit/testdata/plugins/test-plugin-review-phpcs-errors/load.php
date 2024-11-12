@@ -24,3 +24,5 @@ error_log( 'Error occurred.');
 
 query_posts( 'cat=3' );
 wp_reset_query();
+
+parse_str( 'first=value&arr[]=foo+bar&arr[]=baz' );
