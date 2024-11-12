@@ -132,7 +132,22 @@ class Plugin_Header_Fields_Check implements Static_Check {
 			}
 		}
 
-		if ( ! empty( $plugin_header['Description'] ) ) {
+		if ( empty( $plugin_header['Description'] ) ) {
+			$this->add_result_error_for_file(
+				$result,
+				sprintf(
+					/* translators: %s: plugin header field */
+					__( 'The "%s" header is missing in the plugin file.', 'plugin-check' ),
+					esc_html( $labels['Description'] )
+				),
+				'plugin_header_missing_plugin_description',
+				$plugin_main_file,
+				0,
+				0,
+				__( 'https://developer.wordpress.org/plugins/plugin-basics/header-requirements/', 'plugin-check' ),
+				7
+			);
+		} else {
 			if (
 				str_contains( $plugin_header['Description'], 'This is a short description of what the plugin does' )
 				|| str_contains( $plugin_header['Description'], 'Here is a short description of the plugin' )
@@ -155,6 +170,40 @@ class Plugin_Header_Fields_Check implements Static_Check {
 			}
 		}
 
+		if ( empty( $plugin_header['Version'] ) ) {
+			$this->add_result_error_for_file(
+				$result,
+				sprintf(
+					/* translators: %s: plugin header field */
+					__( 'The "%s" header is missing in the plugin file.', 'plugin-check' ),
+					esc_html( $labels['Version'] )
+				),
+				'plugin_header_missing_plugin_version',
+				$plugin_main_file,
+				0,
+				0,
+				__( 'https://developer.wordpress.org/plugins/plugin-basics/header-requirements/', 'plugin-check' ),
+				7
+			);
+		} else {
+			if ( preg_match( '|[^\d\.]|', $plugin_header['Version'] ) ) {
+				$this->add_result_error_for_file(
+					$result,
+					sprintf(
+						/* translators: %s: plugin header field */
+						__( 'The "%s" header in the plugin file should only contain numeric and period characters.', 'plugin-check' ),
+						esc_html( $labels['Version'] )
+					),
+					'plugin_header_invalid_plugin_version',
+					$plugin_main_file,
+					0,
+					0,
+					__( 'https://developer.wordpress.org/plugins/plugin-basics/header-requirements/', 'plugin-check' ),
+					7
+				);
+			}
+		}
+
 		if ( ! empty( $plugin_header['AuthorURI'] ) ) {
 			if ( true !== $this->is_valid_url( $plugin_header['AuthorURI'] ) ) {
 				$this->add_result_warning_for_file(
@@ -170,6 +219,29 @@ class Plugin_Header_Fields_Check implements Static_Check {
 					0,
 					'',
 					6
+				);
+			}
+		}
+
+		if ( ! empty( $plugin_header['PluginURI'] ) && ! empty( $plugin_header['AuthorURI'] ) ) {
+			$plugin_uri = rtrim( strtolower( $plugin_header['PluginURI'] ), '/' );
+			$author_uri = rtrim( strtolower( $plugin_header['AuthorURI'] ), '/' );
+
+			if ( $plugin_uri === $author_uri ) {
+				$this->add_result_error_for_file(
+					$result,
+					sprintf(
+						/* translators: 1: plugin uri header field, 2: author uri header field */
+						__( 'The "%1$s" and "%2$s" header in the plugin file must be different. It is not required to provide both, so pick the one that best applies to your situation.', 'plugin-check' ),
+						esc_html( $labels['PluginURI'] ),
+						esc_html( $labels['AuthorURI'] )
+					),
+					'plugin_header_same_plugin_author_uri',
+					$plugin_main_file,
+					0,
+					0,
+					__( 'https://developer.wordpress.org/plugins/plugin-basics/header-requirements/', 'plugin-check' ),
+					7
 				);
 			}
 		}
