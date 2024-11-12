@@ -12,6 +12,7 @@ use WordPress\Plugin_Check\Checker\Check_Result;
 use WordPress\Plugin_Check\Checker\Checks\Abstract_File_Check;
 use WordPress\Plugin_Check\Traits\Amend_Check_Result;
 use WordPress\Plugin_Check\Traits\Find_Readme;
+use WordPress\Plugin_Check\Traits\License_Utils;
 use WordPress\Plugin_Check\Traits\Stable_Check;
 use WordPressdotorg\Plugin_Directory\Readme\Parser;
 
@@ -27,6 +28,7 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 	use Amend_Check_Result;
 	use Find_Readme;
 	use Stable_Check;
+	use License_Utils;
 
 	/**
 	 * Gets the categories for the check.
@@ -61,9 +63,9 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 		// Filter the readme files.
 		$readme = $this->filter_files_for_readme( $files, $plugin_relative_path );
 
-		// If the readme file does not exist, add a warning and skip other tests.
+		// If the readme file does not exist, add an error and skip other tests.
 		if ( empty( $readme ) ) {
-			$this->add_result_warning_for_file(
+			$this->add_result_error_for_file(
 				$result,
 				__( 'The plugin readme.txt does not exist.', 'plugin-check' ),
 				'no_plugin_readme',
@@ -147,7 +149,7 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 				9
 			);
 		} else {
-			$plugin_data = get_plugin_data( $result->plugin()->main_file() );
+			$plugin_data = get_plugin_data( $result->plugin()->main_file(), false, false );
 
 			$plugin_readme_name = html_entity_decode( $parser->name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
 			$plugin_header_name = html_entity_decode( $plugin_data['Name'], ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
@@ -277,7 +279,7 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 			|| str_contains( $short_description, 'Here is a short description of the plugin.' )
 			|| str_contains( $donate_link, '//example.com/' )
 		) {
-			$this->add_result_warning_for_file(
+			$this->add_result_error_for_file(
 				$result,
 				__( '<strong>The readme appears to contain default text.</strong><br>This means your readme has to have headers as well as a proper description and documentation as to how it works and how one can use it.', 'plugin-check' ),
 				'default_readme_text',
@@ -319,12 +321,12 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 
 			return;
 		} else {
-			$license = $this->normalize_licenses( $license );
+			$license = $this->get_normalized_license( $license );
 		}
 
 		// Test for a valid SPDX license identifier.
-		if ( ! preg_match( '/^([a-z0-9\-\+\.]+)(\sor\s([a-z0-9\-\+\.]+))*$/i', $license ) ) {
-			$this->add_result_warning_for_file(
+		if ( ! $this->is_license_valid_identifier( $license ) ) {
+			$this->add_result_error_for_file(
 				$result,
 				__( '<strong>Your plugin has an invalid license declared.</strong><br>Please update your readme with a valid SPDX license identifier.', 'plugin-check' ),
 				'invalid_license',
@@ -336,40 +338,18 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 			);
 		}
 
+		$plugin_license = '';
+
 		$pattern     = preg_quote( 'License', '/' );
 		$has_license = self::file_preg_match( "/(*ANYCRLF)^.*$pattern\s*:\s*(.*)$/im", array( $plugin_main_file ), $matches_license );
-		if ( ! $has_license ) {
-			$this->add_result_error_for_file(
-				$result,
-				__( '<strong>Your plugin has no license declared in Plugin Header.</strong><br>Please update your plugin header with a GPLv2 (or later) compatible license. It is necessary to declare the license of this plugin. You can do this by using the fields available both in the plugin readme and in the plugin headers.', 'plugin-check' ),
-				'no_license',
-				$plugin_main_file,
-				0,
-				0,
-				'https://developer.wordpress.org/plugins/wordpress-org/common-issues/#no-gpl-compatible-license-declared',
-				9
-			);
-		} else {
-			$plugin_license = $this->normalize_licenses( $matches_license[1] );
-		}
 
-		// Checks for a valid license in Plugin Header.
-		if ( ! empty( $plugin_license ) && ! preg_match( '/GPL|GNU|MIT|FreeBSD|New BSD|BSD-3-Clause|BSD 3 Clause|OpenLDAP|Expat/im', $plugin_license ) ) {
-			$this->add_result_error_for_file(
-				$result,
-				__( '<strong>Your plugin has an invalid license declared in Plugin Header.</strong><br>Please update your readme with a valid GPL license identifier. It is necessary to declare the license of this plugin. You can do this by using the fields available both in the plugin readme and in the plugin headers.', 'plugin-check' ),
-				'invalid_license',
-				$plugin_main_file,
-				0,
-				0,
-				'https://developer.wordpress.org/plugins/wordpress-org/common-issues/#no-gpl-compatible-license-declared',
-				9
-			);
+		if ( $has_license ) {
+			$plugin_license = $this->get_normalized_license( $matches_license[1] );
 		}
 
 		// Check different license types.
 		if ( ! empty( $plugin_license ) && ! empty( $license ) && $license !== $plugin_license ) {
-			$this->add_result_warning_for_file(
+			$this->add_result_error_for_file(
 				$result,
 				__( '<strong>Your plugin has a different license declared in the readme file and plugin header.</strong><br>Please update your readme with a valid GPL license identifier.', 'plugin-check' ),
 				'license_mismatch',
@@ -380,49 +360,6 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 				9
 			);
 		}
-	}
-
-	/**
-	 * Normalize licenses to compare them.
-	 *
-	 * @since 1.0.2
-	 *
-	 * @param string $license The license to normalize.
-	 * @return string
-	 */
-	private function normalize_licenses( $license ) {
-		$license = trim( $license );
-		$license = str_replace( '  ', ' ', $license );
-
-		// Remove some strings at the end.
-		$strings_to_remove = array(
-			'.',
-			'http://www.gnu.org/licenses/old-licenses/gpl-2.0.html',
-			'https://www.gnu.org/licenses/old-licenses/gpl-2.0.html',
-			'https://www.gnu.org/licenses/gpl-3.0.html',
-			' or later',
-			'-or-later',
-			'+',
-		);
-		foreach ( $strings_to_remove as $string_to_remove ) {
-			$position = strrpos( $license, $string_to_remove );
-
-			if ( false !== $position ) {
-				// To remove from the end, the string to remove must be at the end.
-				if ( $position + strlen( $string_to_remove ) === strlen( $license ) ) {
-					$license = trim( substr( $license, 0, $position ) );
-				}
-			}
-		}
-
-		// Versions.
-		$license = str_replace( '-', '', $license );
-		$license = str_replace( 'GNU General Public License (GPL)', 'GPL', $license );
-		$license = str_replace( 'GNU General Public License', 'GPL', $license );
-		$license = preg_replace( '/GPL\s*[-|\.]*\s*[v]?([0-9])(\.[0])?/i', 'GPL$1', $license, 1 );
-		$license = str_replace( '.', '', $license );
-
-		return $license;
 	}
 
 	/**
@@ -673,7 +610,7 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 	 * @param string       $readme_file Readme file.
 	 */
 	private function check_for_contributors( Check_Result $result, string $readme_file ) {
-		$regex = '/Contributors\s?:(.*?)\R/';
+		$regex = '/Contributors\s?:(?:\*\*|\s)?(.*?)\R/';
 
 		$matches = array();
 
