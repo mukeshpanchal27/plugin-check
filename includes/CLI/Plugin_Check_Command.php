@@ -636,10 +636,10 @@ final class Plugin_Check_Command {
 	 *
 	 * @since 1.1.0
 	 *
-	 * @param array $results                     Check results.
-	 * @param int   $error_severity              Error severity level.
-	 * @param int   $warning_severity            Warning severity level.
-	 * @param bool  $include_low_severity_errors Include less level of severity issues as warning.
+	 * @param array $results                       Check results.
+	 * @param int   $error_severity                Error severity level.
+	 * @param int   $warning_severity              Warning severity level.
+	 * @param bool  $include_low_severity_errors   Include less level of severity issues as warning.
 	 * @param bool  $include_low_severity_warnings Include less level of severity issues as warning.
 	 *
 	 * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
