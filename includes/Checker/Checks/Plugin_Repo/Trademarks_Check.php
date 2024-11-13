@@ -150,7 +150,7 @@ class Trademarks_Check extends Abstract_File_Check {
 	/**
 	 * Lists of allowed acronyms of trademarks.
 	 *
-	 * @since 1.2.0
+	 * @since 1.3.0
 	 *
 	 * @var string[]
 	 */
