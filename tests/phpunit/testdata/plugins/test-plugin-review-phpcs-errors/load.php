@@ -24,3 +24,9 @@ error_log( 'Error occurred.');
 
 query_posts( 'cat=3' );
 wp_reset_query();
+
+$str = <<<EOD
+Example of string
+spanning multiple lines
+using heredoc syntax.
+EOD;
