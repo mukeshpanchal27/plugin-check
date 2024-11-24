@@ -56,6 +56,11 @@
 		<severity>7</severity>
 	</rule>
 
+	<!-- Prohibit the use of HEREDOC or NOWDOC. -->
+	<rule ref="Squiz.PHP.Heredoc">
+		<severity>7</severity>
+	</rule>
+
 	<!-- Prohibit the use of the `goto` PHP language construct. -->
 	<rule ref="Generic.PHP.DiscourageGoto.Found">
 		<type>error</type>

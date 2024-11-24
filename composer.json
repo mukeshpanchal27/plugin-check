@@ -4,7 +4,7 @@
   "license": "GPL-2.0-or-later",
   "type": "wordpress-plugin",
   "require": {
-    "php": ">=7.2.24",
+    "php": ">=7.4",
     "ext-json": "*",
     "afragen/wordpress-plugin-readme-parser": "dev-master#67fba498d0b112acf84386b95e4905c539a33f0b",
     "automattic/vipwpcs": "^3.0.0",
@@ -56,7 +56,7 @@
       "phpstan/extension-installer": true
     },
     "platform": {
-      "php": "7.2.24"
+      "php": "7.4"
     }
   },
   "scripts": {

@@ -26,3 +26,10 @@ query_posts( 'cat=3' );
 wp_reset_query();
 
 parse_str( 'first=value&arr[]=foo+bar&arr[]=baz' );
+
+$str = <<<EOD
+Example of string
+spanning multiple lines
+using heredoc syntax.
+EOD;
+
