@@ -234,6 +234,7 @@ class Plugin_Readme_Check_Tests extends WP_UnitTestCase {
 
 		$this->assertCount( 1, wp_list_filter( $warnings['readme.md'][0][0], array( 'code' => 'mismatched_plugin_name' ) ) );
 		$this->assertCount( 1, wp_list_filter( $warnings['readme.md'][0][0], array( 'code' => 'readme_invalid_contributors' ) ) );
+		$this->assertCount( 1, wp_list_filter( $warnings['readme.md'][0][0], array( 'code' => 'readme_invalid_donate_link' ) ) );
 	}
 
 	public function test_single_file_plugin_without_error_for_trademarks() {
