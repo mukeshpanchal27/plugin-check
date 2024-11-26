@@ -10,6 +10,7 @@
 
 namespace PluginCheckCS\PluginCheck\Sniffs\CodeAnalysis;
 
+use PHPCSUtils\Utils\MessageHelper;
 use PHPCSUtils\Utils\PassedParameters;
 use WordPressCS\WordPress\AbstractFunctionParameterSniff;
 
@@ -70,10 +71,12 @@ final class RequiredFunctionParametersSniff extends AbstractFunctionParameterSni
 		$found_param = PassedParameters::getParameterFromStack( $parameters, $target_param['position'], $target_param['name'] );
 
 		if ( false === $found_param ) {
+			$error_code = MessageHelper::stringToErrorCode( $matched_content . '_' . $target_param['name'], true );
+
 			$this->phpcsFile->addError(
 				'The "%s" parameter for function %s() is missing.',
 				$stackPtr,
-				'Missing',
+				$error_code . 'Missing',
 				array( $target_param['name'], $matched_content )
 			);
 		}
