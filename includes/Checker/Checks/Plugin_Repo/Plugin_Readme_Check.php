@@ -104,6 +104,9 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 		// Check the readme file for warnings.
 		$this->check_for_warnings( $result, $readme_file, $parser );
 
+		// Check the readme file for donate link.
+		$this->check_for_donate_link( $result, $readme_file, $parser );
+
 		// Check the readme file for contributors.
 		$this->check_for_contributors( $result, $readme_file );
 	}
@@ -598,6 +601,41 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 					isset( $warning_details[ $warning ]['severity'] ) ? $warning_details[ $warning ]['severity'] : 5
 				);
 			}
+		}
+	}
+
+	/**
+	 * Checks the readme file for donate link.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param Check_Result $result      The Check Result to amend.
+	 * @param string       $readme_file Readme file.
+	 * @param Parser       $parser      The Parser object.
+	 */
+	private function check_for_donate_link( Check_Result $result, string $readme_file, Parser $parser ) {
+		$donate_link = $parser->donate_link;
+
+		// Bail if empty donate link.
+		if ( empty( $donate_link ) ) {
+			return;
+		}
+
+		if ( ! ( filter_var( $donate_link, FILTER_VALIDATE_URL ) === $donate_link && str_starts_with( $donate_link, 'http' ) ) ) {
+			$this->add_result_warning_for_file(
+				$result,
+				sprintf(
+					/* translators: %s: plugin header field */
+					__( 'The "%s" header in the readme file must be a valid URL.', 'plugin-check' ),
+					'Donate link'
+				),
+				'readme_invalid_donate_link',
+				$readme_file,
+				0,
+				0,
+				'https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/#readme-header-information',
+				6
+			);
 		}
 	}
 
