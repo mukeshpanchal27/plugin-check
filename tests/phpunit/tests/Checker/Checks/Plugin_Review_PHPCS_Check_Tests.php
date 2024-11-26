@@ -41,8 +41,8 @@ class Plugin_Review_PHPCS_Check_Tests extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'code', $errors['load.php'][12][5][0] );
 		$this->assertEquals( 'WordPress.WP.DeprecatedFunctions.the_author_emailFound', $errors['load.php'][12][5][0]['code'] );
 
-		// Check for PluginCheck.CodeAnalysis.RequiredFunctionParameters.Missing error on Line no 34 and column no at 1.
-		$this->assertSame( 'PluginCheck.CodeAnalysis.RequiredFunctionParameters.Missing', $errors['load.php'][34][1][0]['code'] );
+		// Check for PluginCheck.CodeAnalysis.RequiredFunctionParameters.parse_str_resultMissing error on Line no 34 and column no at 1.
+		$this->assertSame( 'PluginCheck.CodeAnalysis.RequiredFunctionParameters.parse_str_resultMissing', $errors['load.php'][34][1][0]['code'] );
 
 		// Check for WordPress.Security.ValidatedSanitizedInput warnings on Line no 15 and column no at 27.
 		$this->assertCount( 1, wp_list_filter( $warnings['load.php'][15][27], array( 'code' => 'WordPress.Security.ValidatedSanitizedInput.InputNotValidated' ) ) );
