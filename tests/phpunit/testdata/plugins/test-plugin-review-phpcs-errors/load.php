@@ -30,3 +30,6 @@ Example of string
 spanning multiple lines
 using heredoc syntax.
 EOD;
+
+parse_str( 'first=value&arr[]=foo+bar&arr[]=baz' );
+
