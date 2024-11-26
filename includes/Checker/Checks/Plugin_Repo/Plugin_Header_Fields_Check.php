@@ -236,7 +236,7 @@ class Plugin_Header_Fields_Check implements Static_Check {
 
 		if ( ! empty( $plugin_header['RequiresPlugins'] ) ) {
 			if ( ! preg_match( '/^[a-z0-9-]+(?:,\s*[a-z0-9-]+)*$/', $plugin_header['RequiresPlugins'] ) ) {
-				$this->add_result_warning_for_file(
+				$this->add_result_error_for_file(
 					$result,
 					sprintf(
 						/* translators: %s: plugin header field */
@@ -248,7 +248,7 @@ class Plugin_Header_Fields_Check implements Static_Check {
 					0,
 					0,
 					'',
-					6
+					7
 				);
 			}
 		}

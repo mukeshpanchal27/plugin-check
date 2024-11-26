@@ -36,7 +36,7 @@ class Plugin_Header_Fields_Check_Tests extends WP_UnitTestCase {
 		$this->assertCount( 1, wp_list_filter( $warnings['load.php'][0][0], array( 'code' => 'plugin_header_invalid_network' ) ) );
 
 		if ( is_wp_version_compatible( '6.5' ) ) {
-			$this->assertCount( 1, wp_list_filter( $warnings['load.php'][0][0], array( 'code' => 'plugin_header_invalid_requires_plugins' ) ) );
+			$this->assertCount( 1, wp_list_filter( $errors['load.php'][0][0], array( 'code' => 'plugin_header_invalid_requires_plugins' ) ) );
 		}
 	}
 
@@ -52,10 +52,10 @@ class Plugin_Header_Fields_Check_Tests extends WP_UnitTestCase {
 
 		$check->run( $check_result );
 
-		$warnings = $check_result->get_warnings();
+		$errors = $check_result->get_errors();
 
 		if ( is_wp_version_compatible( '6.5' ) ) {
-			$this->assertCount( 0, wp_list_filter( $warnings['load.php'][0][0], array( 'code' => 'plugin_header_invalid_requires_plugins' ) ) );
+			$this->assertCount( 0, wp_list_filter( $errors['load.php'][0][0], array( 'code' => 'plugin_header_invalid_requires_plugins' ) ) );
 		}
 	}
 
