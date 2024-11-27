@@ -114,19 +114,20 @@ class Plugin_Header_Fields_Check implements Static_Check {
 					'',
 					6
 				);
-			} elseif ( str_contains( $plugin_header['PluginURI'], '//wordpress.org/' ) || str_contains( $plugin_header['PluginURI'], '//example.com/' ) ) {
+			} elseif ( preg_match( '/\/\/(WordPress\.org|example\.com)\//', $plugin_header['PluginURI'], $matches ) ) {
 				$this->add_result_warning_for_file(
 					$result,
 					sprintf(
-						/* translators: %s: plugin header field */
-						__( 'The "%s" header in the plugin file is not valid.', 'plugin-check' ),
-						esc_html( $labels['PluginURI'] )
+						/* translators: 1: plugin header field, 2: domain */
+						__( 'The "%1$s" header in the plugin file is not valid. Discouraged domain "%2$s" found. This is the home page of the plugin, which should be a unique URL, preferably on your own website. ', 'plugin-check' ),
+						esc_html( $labels['PluginURI'] ),
+						esc_html( $matches[1] ),
 					),
 					'plugin_header_invalid_plugin_uri_domain',
 					$plugin_main_file,
 					0,
 					0,
-					'',
+					'https://developer.wordpress.org/plugins/plugin-basics/header-requirements/#header-fields',
 					6
 				);
 			}
