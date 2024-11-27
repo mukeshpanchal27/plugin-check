@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/WordPress/plugin-check
  * Requires at least: 6.0
  * Requires PHP: 5.6
- * Version: 1.0.0-Beta
+ * Version: 1.0.0 Beta
  * Author: WordPress Performance Team
  * Author URI: https://github.com/wordpress/plugin-check/
  * License: GPLv2 or later

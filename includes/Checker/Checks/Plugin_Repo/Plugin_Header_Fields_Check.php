@@ -186,12 +186,12 @@ class Plugin_Header_Fields_Check implements Static_Check {
 				7
 			);
 		} else {
-			if ( preg_match( '|[^\d\.]|', $plugin_header['Version'] ) ) {
+			if ( ! preg_match( '/^[a-z0-9.-]+$/i', $plugin_header['Version'] ) ) {
 				$this->add_result_error_for_file(
 					$result,
 					sprintf(
 						/* translators: %s: plugin header field */
-						__( 'The "%s" header in the plugin file should only contain numeric and period characters.', 'plugin-check' ),
+						__( 'The "%s" header in the plugin file should only contain numbers, letters, periods, and hyphens.', 'plugin-check' ),
 						esc_html( $labels['Version'] )
 					),
 					'plugin_header_invalid_plugin_version',
