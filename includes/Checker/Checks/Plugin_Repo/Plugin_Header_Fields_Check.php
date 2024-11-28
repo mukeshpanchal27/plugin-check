@@ -12,6 +12,7 @@ use WordPress\Plugin_Check\Checker\Check_Categories;
 use WordPress\Plugin_Check\Checker\Check_Result;
 use WordPress\Plugin_Check\Checker\Static_Check;
 use WordPress\Plugin_Check\Traits\Amend_Check_Result;
+use WordPress\Plugin_Check\Traits\License_Utils;
 use WordPress\Plugin_Check\Traits\Stable_Check;
 
 /**
@@ -22,6 +23,7 @@ use WordPress\Plugin_Check\Traits\Stable_Check;
 class Plugin_Header_Fields_Check implements Static_Check {
 
 	use Amend_Check_Result;
+	use License_Utils;
 	use Stable_Check;
 
 	/**
@@ -67,6 +69,8 @@ class Plugin_Header_Fields_Check implements Static_Check {
 			'RequiresPHP'     => 'Requires PHP',
 			'UpdateURI'       => 'Update URI',
 			'RequiresPlugins' => 'Requires Plugins',
+			'License'         => 'License',
+			'LicenseURI'      => 'License URI',
 		);
 
 		$restricted_labels = array(
@@ -128,7 +132,22 @@ class Plugin_Header_Fields_Check implements Static_Check {
 			}
 		}
 
-		if ( ! empty( $plugin_header['Description'] ) ) {
+		if ( empty( $plugin_header['Description'] ) ) {
+			$this->add_result_error_for_file(
+				$result,
+				sprintf(
+					/* translators: %s: plugin header field */
+					__( 'The "%s" header is missing in the plugin file.', 'plugin-check' ),
+					esc_html( $labels['Description'] )
+				),
+				'plugin_header_missing_plugin_description',
+				$plugin_main_file,
+				0,
+				0,
+				__( 'https://developer.wordpress.org/plugins/plugin-basics/header-requirements/', 'plugin-check' ),
+				7
+			);
+		} else {
 			if (
 				str_contains( $plugin_header['Description'], 'This is a short description of what the plugin does' )
 				|| str_contains( $plugin_header['Description'], 'Here is a short description of the plugin' )
@@ -147,6 +166,40 @@ class Plugin_Header_Fields_Check implements Static_Check {
 					0,
 					'',
 					6
+				);
+			}
+		}
+
+		if ( empty( $plugin_header['Version'] ) ) {
+			$this->add_result_error_for_file(
+				$result,
+				sprintf(
+					/* translators: %s: plugin header field */
+					__( 'The "%s" header is missing in the plugin file.', 'plugin-check' ),
+					esc_html( $labels['Version'] )
+				),
+				'plugin_header_missing_plugin_version',
+				$plugin_main_file,
+				0,
+				0,
+				__( 'https://developer.wordpress.org/plugins/plugin-basics/header-requirements/', 'plugin-check' ),
+				7
+			);
+		} else {
+			if ( ! preg_match( '/^[a-z0-9.-]+$/i', $plugin_header['Version'] ) ) {
+				$this->add_result_error_for_file(
+					$result,
+					sprintf(
+						/* translators: %s: plugin header field */
+						__( 'The "%s" header in the plugin file should only contain numbers, letters, periods, and hyphens.', 'plugin-check' ),
+						esc_html( $labels['Version'] )
+					),
+					'plugin_header_invalid_plugin_version',
+					$plugin_main_file,
+					0,
+					0,
+					__( 'https://developer.wordpress.org/plugins/plugin-basics/header-requirements/', 'plugin-check' ),
+					7
 				);
 			}
 		}
@@ -232,7 +285,7 @@ class Plugin_Header_Fields_Check implements Static_Check {
 
 		if ( ! empty( $plugin_header['RequiresPlugins'] ) ) {
 			if ( ! preg_match( '/^[a-z0-9-]+(?:,\s*[a-z0-9-]+)*$/', $plugin_header['RequiresPlugins'] ) ) {
-				$this->add_result_warning_for_file(
+				$this->add_result_error_for_file(
 					$result,
 					sprintf(
 						/* translators: %s: plugin header field */
@@ -244,7 +297,43 @@ class Plugin_Header_Fields_Check implements Static_Check {
 					0,
 					0,
 					'',
-					6
+					7
+				);
+			}
+		}
+
+		if ( empty( $plugin_header['License'] ) ) {
+			$this->add_result_error_for_file(
+				$result,
+				sprintf(
+					/* translators: %s: plugin header field */
+					__( '<strong>Missing "%s" in Plugin Header.</strong><br>Please update your Plugin Header with a valid GPLv2 (or later) compatible license.', 'plugin-check' ),
+					esc_html( $labels['License'] )
+				),
+				'plugin_header_no_license',
+				$plugin_main_file,
+				0,
+				0,
+				'https://developer.wordpress.org/plugins/wordpress-org/common-issues/#no-gpl-compatible-license-declared',
+				9
+			);
+		} else {
+			$plugin_license = $this->get_normalized_license( $plugin_header['License'] );
+			if ( ! $this->is_license_gpl_compatible( $plugin_license ) ) {
+				$this->add_result_error_for_file(
+					$result,
+					sprintf(
+						/* translators: 1: plugin header field, 2: license */
+						__( '<strong>Invalid %1$s: %2$s.</strong><br>Please update your Plugin Header with a valid GPLv2 (or later) compatible license.', 'plugin-check' ),
+						esc_html( $labels['License'] ),
+						esc_html( $plugin_header['License'] )
+					),
+					'plugin_header_invalid_license',
+					$plugin_main_file,
+					0,
+					0,
+					'https://developer.wordpress.org/plugins/wordpress-org/common-issues/#no-gpl-compatible-license-declared',
+					9
 				);
 			}
 		}

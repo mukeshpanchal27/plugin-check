@@ -56,6 +56,11 @@
 		<severity>7</severity>
 	</rule>
 
+	<!-- Prohibit the use of HEREDOC or NOWDOC. -->
+	<rule ref="Squiz.PHP.Heredoc">
+		<severity>7</severity>
+	</rule>
+
 	<!-- Prohibit the use of the `goto` PHP language construct. -->
 	<rule ref="Generic.PHP.DiscourageGoto.Found">
 		<type>error</type>
@@ -141,13 +146,18 @@
 		<severity>7</severity>
 	</rule>
 
-    <!-- Check for discouraged WordPress functions. -->
+	<!-- Check for discouraged WordPress functions. -->
 	<rule ref="WordPress.WP.DiscouragedFunctions">
 		<severity>6</severity>
 	</rule>
 
 	<!-- Check for usage of deprecated parameter values in WP functions and provide alternative based on the parameter passed. -->
 	<rule ref="WordPress.WP.DeprecatedParameterValues">
+		<severity>7</severity>
+	</rule>
+
+	<!-- Check for missing required function parameters. -->
+	<rule ref="PluginCheck.CodeAnalysis.RequiredFunctionParameters">
 		<severity>7</severity>
 	</rule>
 

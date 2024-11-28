@@ -104,6 +104,9 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 		// Check the readme file for warnings.
 		$this->check_for_warnings( $result, $readme_file, $parser );
 
+		// Check the readme file for donate link.
+		$this->check_for_donate_link( $result, $readme_file, $parser );
+
 		// Check the readme file for contributors.
 		$this->check_for_contributors( $result, $readme_file );
 	}
@@ -338,35 +341,13 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 			);
 		}
 
+		$plugin_license = '';
+
 		$pattern     = preg_quote( 'License', '/' );
 		$has_license = self::file_preg_match( "/(*ANYCRLF)^.*$pattern\s*:\s*(.*)$/im", array( $plugin_main_file ), $matches_license );
-		if ( ! $has_license ) {
-			$this->add_result_error_for_file(
-				$result,
-				__( '<strong>Your plugin has no license declared in Plugin Header.</strong><br>Please update your plugin header with a GPLv2 (or later) compatible license. It is necessary to declare the license of this plugin. You can do this by using the fields available both in the plugin readme and in the plugin headers.', 'plugin-check' ),
-				'no_license',
-				$plugin_main_file,
-				0,
-				0,
-				'https://developer.wordpress.org/plugins/wordpress-org/common-issues/#no-gpl-compatible-license-declared',
-				9
-			);
-		} else {
-			$plugin_license = $this->get_normalized_license( $matches_license[1] );
-		}
 
-		// Checks for a valid license in Plugin Header.
-		if ( ! empty( $plugin_license ) && ! $this->is_license_gpl_compatible( $plugin_license ) ) {
-			$this->add_result_error_for_file(
-				$result,
-				__( '<strong>Your plugin has an invalid license declared in Plugin Header.</strong><br>Please update your readme with a valid GPL license identifier. It is necessary to declare the license of this plugin. You can do this by using the fields available both in the plugin readme and in the plugin headers.', 'plugin-check' ),
-				'invalid_license',
-				$plugin_main_file,
-				0,
-				0,
-				'https://developer.wordpress.org/plugins/wordpress-org/common-issues/#no-gpl-compatible-license-declared',
-				9
-			);
+		if ( $has_license ) {
+			$plugin_license = $this->get_normalized_license( $matches_license[1] );
 		}
 
 		// Check different license types.
@@ -501,6 +482,11 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 		// This should be ERROR rather than WARNING. So ignoring here to handle separately.
 		unset( $warnings['invalid_plugin_name_header'] );
 
+		// We handle license check in our own way.
+		unset( $warnings['license_missing'] );
+		unset( $warnings['invalid_license'] );
+		unset( $warnings['unknown_license'] );
+
 		$warning_keys = array_keys( $warnings );
 
 		$latest_wordpress_version = (float) $this->get_wordpress_stable_version();
@@ -620,6 +606,41 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 					isset( $warning_details[ $warning ]['severity'] ) ? $warning_details[ $warning ]['severity'] : 5
 				);
 			}
+		}
+	}
+
+	/**
+	 * Checks the readme file for donate link.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param Check_Result $result      The Check Result to amend.
+	 * @param string       $readme_file Readme file.
+	 * @param Parser       $parser      The Parser object.
+	 */
+	private function check_for_donate_link( Check_Result $result, string $readme_file, Parser $parser ) {
+		$donate_link = $parser->donate_link;
+
+		// Bail if empty donate link.
+		if ( empty( $donate_link ) ) {
+			return;
+		}
+
+		if ( ! ( filter_var( $donate_link, FILTER_VALIDATE_URL ) === $donate_link && str_starts_with( $donate_link, 'http' ) ) ) {
+			$this->add_result_warning_for_file(
+				$result,
+				sprintf(
+					/* translators: %s: plugin header field */
+					__( 'The "%s" header in the readme file must be a valid URL.', 'plugin-check' ),
+					'Donate link'
+				),
+				'readme_invalid_donate_link',
+				$readme_file,
+				0,
+				0,
+				'https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/#readme-header-information',
+				6
+			);
 		}
 	}
 
