@@ -119,7 +119,7 @@ class Plugin_Header_Fields_Check implements Static_Check {
 					$result,
 					sprintf(
 						/* translators: 1: plugin header field, 2: domain */
-						__( 'The "%1$s" header in the plugin file is not valid. Discouraged domain "%2$s" found. This is the home page of the plugin, which should be a unique URL, preferably on your own website. ', 'plugin-check' ),
+						__( 'The "%1$s" header in the plugin file is not valid. Discouraged domain "%2$s" found. This is the homepage of the plugin, which should be a unique URL, preferably on your own website. ', 'plugin-check' ),
 						esc_html( $labels['PluginURI'] ),
 						esc_html( $matches[1] ),
 					),
