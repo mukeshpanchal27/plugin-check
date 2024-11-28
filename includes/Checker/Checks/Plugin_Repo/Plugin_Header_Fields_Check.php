@@ -223,29 +223,6 @@ class Plugin_Header_Fields_Check implements Static_Check {
 			}
 		}
 
-		if ( ! empty( $plugin_header['PluginURI'] ) && ! empty( $plugin_header['AuthorURI'] ) ) {
-			$plugin_uri = rtrim( strtolower( $plugin_header['PluginURI'] ), '/' );
-			$author_uri = rtrim( strtolower( $plugin_header['AuthorURI'] ), '/' );
-
-			if ( $plugin_uri === $author_uri ) {
-				$this->add_result_error_for_file(
-					$result,
-					sprintf(
-						/* translators: 1: plugin uri header field, 2: author uri header field */
-						__( 'The "%1$s" and "%2$s" header in the plugin file must be different. It is not required to provide both, so pick the one that best applies to your situation.', 'plugin-check' ),
-						esc_html( $labels['PluginURI'] ),
-						esc_html( $labels['AuthorURI'] )
-					),
-					'plugin_header_same_plugin_author_uri',
-					$plugin_main_file,
-					0,
-					0,
-					__( 'https://developer.wordpress.org/plugins/plugin-basics/header-requirements/', 'plugin-check' ),
-					7
-				);
-			}
-		}
-
 		if ( ! empty( $plugin_header['Network'] ) ) {
 			if ( 'true' !== strtolower( $plugin_header['Network'] ) ) {
 				$this->add_result_warning_for_file(

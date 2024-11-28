@@ -88,6 +88,5 @@ class Plugin_Header_Fields_Check_Tests extends WP_UnitTestCase {
 
 		$this->assertCount( 1, wp_list_filter( $errors['load.php'][0][0], array( 'code' => 'plugin_header_missing_plugin_description' ) ) );
 		$this->assertCount( 1, wp_list_filter( $errors['load.php'][0][0], array( 'code' => 'plugin_header_invalid_plugin_version' ) ) );
-		$this->assertCount( 1, wp_list_filter( $errors['load.php'][0][0], array( 'code' => 'plugin_header_same_plugin_author_uri' ) ) );
 	}
 }
