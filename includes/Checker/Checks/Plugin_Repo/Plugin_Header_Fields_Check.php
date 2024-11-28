@@ -132,7 +132,22 @@ class Plugin_Header_Fields_Check implements Static_Check {
 			}
 		}
 
-		if ( ! empty( $plugin_header['Description'] ) ) {
+		if ( empty( $plugin_header['Description'] ) ) {
+			$this->add_result_error_for_file(
+				$result,
+				sprintf(
+					/* translators: %s: plugin header field */
+					__( 'The "%s" header is missing in the plugin file.', 'plugin-check' ),
+					esc_html( $labels['Description'] )
+				),
+				'plugin_header_missing_plugin_description',
+				$plugin_main_file,
+				0,
+				0,
+				__( 'https://developer.wordpress.org/plugins/plugin-basics/header-requirements/', 'plugin-check' ),
+				7
+			);
+		} else {
 			if (
 				str_contains( $plugin_header['Description'], 'This is a short description of what the plugin does' )
 				|| str_contains( $plugin_header['Description'], 'Here is a short description of the plugin' )
@@ -151,6 +166,40 @@ class Plugin_Header_Fields_Check implements Static_Check {
 					0,
 					'',
 					6
+				);
+			}
+		}
+
+		if ( empty( $plugin_header['Version'] ) ) {
+			$this->add_result_error_for_file(
+				$result,
+				sprintf(
+					/* translators: %s: plugin header field */
+					__( 'The "%s" header is missing in the plugin file.', 'plugin-check' ),
+					esc_html( $labels['Version'] )
+				),
+				'plugin_header_missing_plugin_version',
+				$plugin_main_file,
+				0,
+				0,
+				__( 'https://developer.wordpress.org/plugins/plugin-basics/header-requirements/', 'plugin-check' ),
+				7
+			);
+		} else {
+			if ( ! preg_match( '/^[a-z0-9.-]+$/i', $plugin_header['Version'] ) ) {
+				$this->add_result_error_for_file(
+					$result,
+					sprintf(
+						/* translators: %s: plugin header field */
+						__( 'The "%s" header in the plugin file should only contain numbers, letters, periods, and hyphens.', 'plugin-check' ),
+						esc_html( $labels['Version'] )
+					),
+					'plugin_header_invalid_plugin_version',
+					$plugin_main_file,
+					0,
+					0,
+					__( 'https://developer.wordpress.org/plugins/plugin-basics/header-requirements/', 'plugin-check' ),
+					7
 				);
 			}
 		}
