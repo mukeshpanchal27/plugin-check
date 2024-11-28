@@ -482,6 +482,11 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 		// This should be ERROR rather than WARNING. So ignoring here to handle separately.
 		unset( $warnings['invalid_plugin_name_header'] );
 
+		// We handle license check in our own way.
+		unset( $warnings['license_missing'] );
+		unset( $warnings['invalid_license'] );
+		unset( $warnings['unknown_license'] );
+
 		$warning_keys = array_keys( $warnings );
 
 		$latest_wordpress_version = (float) $this->get_wordpress_stable_version();
