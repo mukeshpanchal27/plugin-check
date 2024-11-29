@@ -114,7 +114,7 @@ class Plugin_Header_Fields_Check implements Static_Check {
 					'',
 					6
 				);
-			} elseif ( preg_match( '/\/\/(WordPress\.org|example\.com)\//', $plugin_header['PluginURI'], $matches ) ) {
+			} elseif ( preg_match( '/\/\/(example\.com|example\.net|example\.org)\//', $plugin_header['PluginURI'], $matches ) ) {
 				$this->add_result_warning_for_file(
 					$result,
 					sprintf(
