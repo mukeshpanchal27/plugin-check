@@ -70,6 +70,7 @@ In any case, passing the checks in this tool likely helps to achieve a smooth pl
 
 = 1.3.0 =
 
+* Enhancement - Update disallowed domains for Plugin URI check.
 * Enhancement - Added new checks for Plugin Header fields: missing plugin description, missing plugin version and invalid plugin version.
 * Enhancement - New check for validation of donate link in the readme file.
 * Enhancement - Increased severity for wrong Plugin Requires.
