@@ -72,8 +72,8 @@ class Version_Utils_Tests extends WP_UnitTestCase {
 		$this->assertSame( '5.5.5', $version );
 	}
 
-	public function test_recommended_php_version() {
-		$version = $this->get_recommended_php_version();
+	public function test_wordpress_recommended_php_version() {
+		$version = $this->get_wordpress_recommended_php_version();
 		$this->assertSame( '7.4', $version );
 	}
 

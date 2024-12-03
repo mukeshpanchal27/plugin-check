@@ -80,7 +80,7 @@ trait Version_Utils {
 	 *
 	 * @return string Recommended PHP version.
 	 */
-	protected function get_recommended_php_version(): string {
+	protected function get_wordpress_recommended_php_version(): string {
 		$recommended_version = '7.4'; // Default fallback recommended version.
 
 		$version_details = wp_check_php_version();
