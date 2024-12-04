@@ -93,6 +93,25 @@ trait Version_Utils {
 	}
 
 	/**
+	 * Returns relative WordPress major version.
+	 *
+	 * @since 1.4.0
+	 *
+	 * @param string $version WordPress major version.
+	 * @param int    $steps   Steps to find relative version. Defaults to 1 for next major version.
+	 * @return string Relative WordPress major version.
+	 */
+	protected function get_wordpress_relative_major_version( string $version, int $steps = 1 ): string {
+		if ( 0 === $steps ) {
+			return $version;
+		}
+
+		$new_version = floatval( $version ) + ( 0.1 * $steps );
+
+		return (string) number_format( $new_version, 1 );
+	}
+
+	/**
 	 * Returns specific information.
 	 *
 	 * @since 1.4.0

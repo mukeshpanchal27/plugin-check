@@ -77,9 +77,32 @@ class Version_Utils_Tests extends WP_UnitTestCase {
 		$this->assertSame( '7.4', $version );
 	}
 
+	/**
+	 * @dataProvider data_wordpress_version_items
+	 */
+	public function test_wordpress_relative_major_version( $version, $steps, $new_version ) {
+		$result = $this->get_wordpress_relative_major_version( $version, $steps );
+		$this->assertSame( $new_version, $result );
+	}
+
 	public function tear_down() {
 		delete_transient( $this->info_transient_key );
 		delete_site_transient( $this->php_check_transient_key );
 		parent::tear_down();
+	}
+
+	public function data_wordpress_version_items() {
+		return array(
+			array( '6.7', 1, '6.8' ),
+			array( '6.7', -1, '6.6' ),
+			array( '6.7', 2, '6.9' ),
+			array( '6.7', -2, '6.5' ),
+			array( '5.9', 1, '6.0' ),
+			array( '6.0', -1, '5.9' ),
+			array( '5.9', 2, '6.1' ),
+			array( '6.0', -2, '5.8' ),
+			array( '5.8', 2, '6.0' ),
+			array( '6.1', -2, '5.9' ),
+		);
 	}
 }
