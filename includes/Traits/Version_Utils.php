@@ -17,7 +17,7 @@ trait Version_Utils {
 	/**
 	 * Returns current major WordPress version.
 	 *
-	 * @since 1.0.0
+	 * @since 1.4.0
 	 *
 	 * @return string Stable WordPress version.
 	 */
