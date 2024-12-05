@@ -48,51 +48,6 @@ trait Version_Utils {
 	}
 
 	/**
-	 * Returns required PHP version.
-	 *
-	 * @since 1.4.0
-	 *
-	 * @return string Required PHP version.
-	 */
-	protected function get_php_required_version(): string {
-		$version = $this->get_latest_version_info( 'php_version' );
-
-		return $version ?? $this->get_required_php_version();
-	}
-
-	/**
-	 * Returns required MySQL version.
-	 *
-	 * @since 1.4.0
-	 *
-	 * @return string Required MySQL version.
-	 */
-	protected function get_mysql_required_version(): string {
-		$version = $this->get_latest_version_info( 'mysql_version' );
-
-		return $version ?? $this->get_required_mysql_version();
-	}
-
-	/**
-	 * Returns recommended PHP version.
-	 *
-	 * @since 1.4.0
-	 *
-	 * @return string Recommended PHP version.
-	 */
-	protected function get_php_recommended_version(): string {
-		$recommended_version = '7.4'; // Default fallback recommended version.
-
-		$version_details = wp_check_php_version();
-
-		if ( is_array( $version_details ) && ! empty( $version_details['recommended_version'] ) ) {
-			$recommended_version = $version_details['recommended_version'];
-		}
-
-		return $recommended_version;
-	}
-
-	/**
 	 * Returns relative WordPress major version.
 	 *
 	 * @since 1.4.0
@@ -136,39 +91,5 @@ trait Version_Utils {
 		}
 
 		return array_key_exists( $key, $info ) ? $info[ $key ] : null;
-	}
-
-	/**
-	 * Returns the current WordPress' required PHP version.
-	 *
-	 * @since 1.4.0
-	 *
-	 * @return string The current WordPress' required PHP version.
-	 */
-	private function get_required_php_version(): string {
-		static $required_php_version;
-
-		if ( ! isset( $required_php_version ) ) {
-			require ABSPATH . WPINC . '/version.php';
-		}
-
-		return $required_php_version;
-	}
-
-	/**
-	 * Returns the current WordPress' required MySQL version.
-	 *
-	 * @since 1.4.0
-	 *
-	 * @return string The current WordPress' required MySQL version.
-	 */
-	private function get_required_mysql_version(): string {
-		static $required_mysql_version;
-
-		if ( ! isset( $required_mysql_version ) ) {
-			require ABSPATH . WPINC . '/version.php';
-		}
-
-		return $required_mysql_version;
 	}
 }

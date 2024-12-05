@@ -62,21 +62,6 @@ class Version_Utils_Tests extends WP_UnitTestCase {
 		$this->assertSame( '6.7', $version );
 	}
 
-	public function test_wordpress_required_php_version() {
-		$version = $this->get_php_required_version();
-		$this->assertSame( '7.2.24', $version );
-	}
-
-	public function test_wordpress_required_mysql_version() {
-		$version = $this->get_mysql_required_version();
-		$this->assertSame( '5.5.5', $version );
-	}
-
-	public function test_wordpress_recommended_php_version() {
-		$version = $this->get_php_recommended_version();
-		$this->assertSame( '7.4', $version );
-	}
-
 	/**
 	 * @dataProvider data_wordpress_version_items
 	 */
