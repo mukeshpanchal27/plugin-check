@@ -653,10 +653,10 @@ final class Plugin_Check_Command {
 			if ( 'ERROR' === $item['type'] && $item['severity'] >= $error_severity ) {
 				$errors[] = $item;
 			} elseif ( $include_low_severity_errors && 'ERROR' === $item['type'] && $item['severity'] < $error_severity ) {
-				$item['type'] = 'ERRORS_LOW_SEVERITY';
+				$item['type'] = 'ERROR_LOW_SEVERITY';
 				$errors[]     = $item;
 			} elseif ( $include_low_severity_warnings && 'WARNING' === $item['type'] && $item['severity'] < $warning_severity ) {
-				$item['type'] = 'WARNINGS_LOW_SEVERITY';
+				$item['type'] = 'WARNING_LOW_SEVERITY';
 				$warnings[]   = $item;
 			} elseif ( 'WARNING' === $item['type'] && $item['severity'] >= $warning_severity ) {
 				$warnings[] = $item;
