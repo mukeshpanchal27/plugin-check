@@ -13,22 +13,8 @@ class Version_Utils_Tests extends WP_UnitTestCase {
 
 	protected $info_transient_key = 'wp_plugin_check_latest_version_info';
 
-	protected $php_check_transient_key = '';
-
 	public function set_up() {
 		parent::set_up();
-
-		$this->php_check_transient_key = 'php_check_' . md5( PHP_VERSION );
-
-		$php_check_data = array(
-			'recommended_version' => '7.4',
-			'minimum_version'     => '7.2.24',
-			'is_supported'        => true,
-			'is_secure'           => true,
-			'is_acceptable'       => true,
-		);
-
-		set_site_transient( $this->php_check_transient_key, $php_check_data );
 
 		$info_data = array(
 			'response'        => 'upgrade',
@@ -72,7 +58,6 @@ class Version_Utils_Tests extends WP_UnitTestCase {
 
 	public function tear_down() {
 		delete_transient( $this->info_transient_key );
-		delete_site_transient( $this->php_check_transient_key );
 		parent::tear_down();
 	}
 
