@@ -58,8 +58,8 @@ class I18n_Usage_Check_Tests extends WP_UnitTestCase {
 
 		// Explicitly using the 'default' text domain is a warning, omitting a text domain is an error.
 		$this->assertNotEmpty( $check_result->get_errors() );
-		$this->assertNotEmpty( $check_result->get_warnings() );
-		$this->assertEquals( 1, $check_result->get_error_count() );
-		$this->assertEquals( 1, $check_result->get_warning_count() );
+		$this->assertEmpty( $check_result->get_warnings() );
+		$this->assertEquals( 2, $check_result->get_error_count() );
+		$this->assertEquals( 0, $check_result->get_warning_count() );
 	}
 }
