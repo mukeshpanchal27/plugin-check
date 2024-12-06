@@ -10,14 +10,14 @@ namespace WordPress\Plugin_Check\Traits;
 /**
  * Trait for version utilities.
  *
- * @since 1.4.0
+ * @since 1.3.1
  */
 trait Version_Utils {
 
 	/**
 	 * Returns current major WordPress version.
 	 *
-	 * @since 1.4.0
+	 * @since 1.3.1
 	 *
 	 * @return string Stable WordPress version.
 	 */
@@ -37,7 +37,7 @@ trait Version_Utils {
 	/**
 	 * Returns WordPress latest version.
 	 *
-	 * @since 1.4.0
+	 * @since 1.3.1
 	 *
 	 * @return string WordPress latest version.
 	 */
@@ -50,7 +50,7 @@ trait Version_Utils {
 	/**
 	 * Returns relative WordPress major version.
 	 *
-	 * @since 1.4.0
+	 * @since 1.3.1
 	 *
 	 * @param string $version WordPress major version.
 	 * @param int    $steps   Steps to find relative version. Defaults to 1 for next major version.
@@ -69,7 +69,7 @@ trait Version_Utils {
 	/**
 	 * Returns specific information.
 	 *
-	 * @since 1.4.0
+	 * @since 1.3.1
 	 *
 	 * @param string $key The information key to retrieve.
 	 * @return mixed The requested information.
