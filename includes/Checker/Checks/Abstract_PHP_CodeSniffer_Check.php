@@ -142,7 +142,7 @@ abstract class Abstract_PHP_CodeSniffer_Check implements Static_Check {
 				$this->add_result_message_for_file(
 					$result,
 					strtoupper( $file_message['type'] ) === 'ERROR',
-					$file_message['message'],
+					esc_html( $file_message['message'] ),
 					$file_message['source'],
 					$file_name,
 					$file_message['line'],

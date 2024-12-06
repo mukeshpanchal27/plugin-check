@@ -99,7 +99,7 @@ class I18n_Usage_Check extends Abstract_PHP_CodeSniffer_Check {
 	 */
 	protected function add_result_message_for_file( Check_Result $result, $error, $message, $code, $file, $line = 0, $column = 0, string $docs = '', $severity = 5 ) {
 		// Downgrade errors about usage of the 'default' text domain from WordPress Core to warnings.
-		if ( $error && str_ends_with( $message, " but got 'default'." ) ) {
+		if ( $error && str_ends_with( $message, ' but got &#039;default&#039;.' ) ) {
 			$error = false;
 		}
 
