@@ -555,6 +555,7 @@ final class Plugin_Check_Command {
 				foreach ( $column_errors as $column_error ) {
 
 					$column_error['message'] = str_replace( array( '<br>', '<strong>', '</strong>', '<code>', '</code>' ), array( ' ', '', '', '`', '`' ), $column_error['message'] );
+					$column_error['message'] = html_entity_decode( $column_error['message'] );
 
 					$file_results[] = array_merge(
 						$column_error,
