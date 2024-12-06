@@ -692,6 +692,35 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 				'',
 				6
 			);
+
+			return;
+		}
+
+		$restricted_contributors = array(
+			'username',
+			'your-username',
+			'your_wordpress_username',
+			'yourusername',
+		);
+
+		$restricted_usernames = array_intersect( $usernames, $restricted_contributors );
+
+		if ( ! empty( $restricted_usernames ) ) {
+			$this->add_result_error_for_file(
+				$result,
+				sprintf(
+					/* translators: 1: plugin header field, 2: usernames */
+					__( 'The "%1$s" header in the readme file contains restricted username(s). Found: %2$s', 'plugin-check' ),
+					'Contributors',
+					'"' . implode( '", "', $restricted_usernames ) . '"'
+				),
+				'readme_restricted_contributors',
+				$readme_file,
+				0,
+				0,
+				'https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/#readme-header-information',
+				7
+			);
 		}
 	}
 
