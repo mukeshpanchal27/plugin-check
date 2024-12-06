@@ -2,7 +2,7 @@
 
 Contributors:      wordpressdotorg
 Tested up to:      6.7
-Stable tag:        1.3.0
+Stable tag:        1.3.1
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Tags:              plugin best practices, testing, accessibility, performance, security
@@ -67,6 +67,13 @@ To be approved in the WordPress.org plugin directory, a plugin must typically pa
 In any case, passing the checks in this tool likely helps to achieve a smooth plugin review process, but is no guarantee that a plugin will be approved in the WordPress.org plugin directory.
 
 == Changelog ==
+
+= 1.3.1 =
+
+* Enhancement - Add version utilities.
+* Fix - Escape error messages.
+* Fix - Renamed error type to ERROR_LOW_SEVERITY and WARNING_LOW_SEVERITY.
+* Fix - Fix PHPCS checks on unwritable filesystems.
 
 = 1.3.0 =
 
