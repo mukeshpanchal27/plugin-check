@@ -704,7 +704,7 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 			array_filter(
 				$restricted_contributors,
 				function ( $value ) {
-					return true === $value;
+					return 'error' === strtolower( $value );
 				}
 			)
 		);
@@ -735,7 +735,7 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 			array_filter(
 				$restricted_contributors,
 				function ( $value ) {
-					return false === $value;
+					return 'warning' === strtolower( $value );
 				}
 			)
 		);
@@ -839,11 +839,11 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 	 */
 	private function get_restricted_contributors() {
 		$restricted_contributors = array(
-			'username'                => true,
-			'your-username'           => true,
-			'your_wordpress_username' => true,
-			'yourusername'            => true,
-			'wordpressdotorg'         => false,
+			'username'                => 'error',
+			'your-username'           => 'error',
+			'your_wordpress_username' => 'error',
+			'yourusername'            => 'error',
+			'wordpressdotorg'         => 'warning',
 		);
 
 		/**
@@ -851,7 +851,7 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 		 *
 		 * @since 1.4.0
 		 *
-		 * @param array $restricted_contributors Array of restricted contributors with boolean value to indicate whether username should be error or warning. Value 'true' for error and 'false' for warning.
+		 * @param array $restricted_contributors Array of restricted contributors with error type.
 		 */
 		$restricted_contributors = (array) apply_filters( 'wp_plugin_check_restricted_contributors', $restricted_contributors );
 
