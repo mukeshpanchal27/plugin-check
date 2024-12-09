@@ -840,9 +840,12 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 	private function get_restricted_contributors() {
 		$restricted_contributors = array(
 			'username'                => 'error',
+			'your-name'               => 'error',
 			'your-username'           => 'error',
+			'your-wordpress-username' => 'error',
 			'your_wordpress_username' => 'error',
 			'yourusername'            => 'error',
+			'yourwordpressusername'   => 'error',
 			'wordpressdotorg'         => 'warning',
 		);
 
