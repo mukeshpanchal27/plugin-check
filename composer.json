@@ -25,7 +25,9 @@
     "wp-cli/wp-cli-tests": "^4.2.9",
     "wp-cli/language-command": "^2.0",
     "wp-cli/i18n-command": "^2.6",
-    "wp-cli/entity-command": "^2.8"
+    "wp-cli/entity-command": "^2.8",
+    "wp-phpunit/wp-phpunit": "^6.3",
+    "yoast/phpunit-polyfills": "^1.0"
   },
   "repositories": [
     {
