@@ -651,6 +651,8 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 	 *
 	 * @param Check_Result $result      The Check Result to amend.
 	 * @param string       $readme_file Readme file.
+	 *
+	 * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
 	 */
 	private function check_for_contributors( Check_Result $result, string $readme_file ) {
 		$regex = '/Contributors\s?:(?:\*\*|\s)?(.*?)\R/';
@@ -666,7 +668,7 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 
 		$usernames = explode( ',', $matches[1] );
 
-		$usernames = array_map( 'trim', $usernames );
+		$usernames = array_unique( array_map( 'trim', $usernames ) );
 
 		$valid = true;
 
@@ -692,6 +694,72 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 				'',
 				6
 			);
+
+			return;
+		}
+
+		$restricted_contributors = $this->get_restricted_contributors();
+
+		$disallowed_contributors = array_keys(
+			array_filter(
+				$restricted_contributors,
+				function ( $value ) {
+					return 'error' === strtolower( $value );
+				}
+			)
+		);
+
+		if ( ! empty( $disallowed_contributors ) ) {
+			$disallowed_usernames = array_intersect( $usernames, $disallowed_contributors );
+
+			if ( ! empty( $disallowed_usernames ) ) {
+				$this->add_result_error_for_file(
+					$result,
+					sprintf(
+						/* translators: 1: plugin header field, 2: usernames */
+						__( 'The "%1$s" header in the readme file contains restricted username(s). Found: %2$s', 'plugin-check' ),
+						'Contributors',
+						'"' . implode( '", "', $disallowed_usernames ) . '"'
+					),
+					'readme_restricted_contributors',
+					$readme_file,
+					0,
+					0,
+					'https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/#readme-header-information',
+					7
+				);
+			}
+		}
+
+		$reserved_contributors = array_keys(
+			array_filter(
+				$restricted_contributors,
+				function ( $value ) {
+					return 'warning' === strtolower( $value );
+				}
+			)
+		);
+
+		if ( ! empty( $reserved_contributors ) ) {
+			$reserved_usernames = array_intersect( $usernames, $reserved_contributors );
+
+			if ( ! empty( $reserved_usernames ) ) {
+				$this->add_result_warning_for_file(
+					$result,
+					sprintf(
+						/* translators: 1: plugin header field, 2: usernames */
+						__( 'The "%1$s" header in the readme file contains reserved username(s). Found: %2$s', 'plugin-check' ),
+						'Contributors',
+						'"' . implode( '", "', $reserved_usernames ) . '"'
+					),
+					'readme_reserved_contributors',
+					$readme_file,
+					0,
+					0,
+					'https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/#readme-header-information',
+					6
+				);
+			}
 		}
 	}
 
@@ -760,6 +828,37 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 		$ignored_warnings = (array) apply_filters( 'wp_plugin_check_ignored_readme_warnings', $ignored_warnings, $parser );
 
 		return $ignored_warnings;
+	}
+
+	/**
+	 * Returns restricted contributors.
+	 *
+	 * @since 1.4.0
+	 *
+	 * @return array Restricted contributors.
+	 */
+	private function get_restricted_contributors() {
+		$restricted_contributors = array(
+			'username'                => 'error',
+			'your-name'               => 'error',
+			'your-username'           => 'error',
+			'your-wordpress-username' => 'error',
+			'your_wordpress_username' => 'error',
+			'yourusername'            => 'error',
+			'yourwordpressusername'   => 'error',
+			'wordpressdotorg'         => 'warning',
+		);
+
+		/**
+		 * Filter the list of restricted contributors.
+		 *
+		 * @since 1.4.0
+		 *
+		 * @param array $restricted_contributors Array of restricted contributors with error type.
+		 */
+		$restricted_contributors = (array) apply_filters( 'wp_plugin_check_restricted_contributors', $restricted_contributors );
+
+		return $restricted_contributors;
 	}
 
 	/**

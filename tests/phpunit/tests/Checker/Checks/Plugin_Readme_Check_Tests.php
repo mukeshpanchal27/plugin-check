@@ -68,6 +68,28 @@ class Plugin_Readme_Check_Tests extends WP_UnitTestCase {
 		$this->assertCount( 1, wp_list_filter( $errors['readme.txt'][0][0], array( 'code' => 'invalid_plugin_name' ) ) );
 	}
 
+	public function test_run_with_errors_restricted_contributors() {
+		$readme_check  = new Plugin_Readme_Check();
+		$check_context = new Check_Context( UNIT_TESTS_PLUGIN_DIR . 'test-plugin-plugin-readme-errors-invalid-name/load.php' );
+		$check_result  = new Check_Result( $check_context );
+
+		$readme_check->run( $check_result );
+
+		$errors   = $check_result->get_errors();
+		$warnings = $check_result->get_warnings();
+
+		$this->assertNotEmpty( $errors );
+		$this->assertNotEmpty( $warnings );
+		$this->assertArrayHasKey( 'readme.txt', $errors );
+		$this->assertArrayHasKey( 'readme.txt', $warnings );
+
+		// Check for restricted contributors error.
+		$this->assertCount( 1, wp_list_filter( $errors['readme.txt'][0][0], array( 'code' => 'readme_restricted_contributors' ) ) );
+
+		// Check for reserved contributors warning.
+		$this->assertCount( 1, wp_list_filter( $warnings['readme.txt'][0][0], array( 'code' => 'readme_reserved_contributors' ) ) );
+	}
+
 	public function test_run_with_errors_empty_name() {
 		$readme_check  = new Plugin_Readme_Check();
 		$check_context = new Check_Context( UNIT_TESTS_PLUGIN_DIR . 'test-plugin-plugin-readme-errors-empty-name/load.php' );
