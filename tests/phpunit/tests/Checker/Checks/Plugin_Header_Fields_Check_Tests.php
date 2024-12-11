@@ -41,6 +41,27 @@ class Plugin_Header_Fields_Check_Tests extends WP_UnitTestCase {
 		}
 	}
 
+	public function test_run_with_invalid_requires_wp_header() {
+		set_transient( 'wp_plugin_check_latest_version_info', array( 'current' => '6.5.1' ) );
+
+		$check         = new Plugin_Header_Fields_Check();
+		$check_context = new Check_Context( UNIT_TESTS_PLUGIN_DIR . 'test-plugin-header-fields-with-errors/load.php' );
+		$check_result  = new Check_Result( $check_context );
+
+		$check->run( $check_result );
+
+		$errors = $check_result->get_errors();
+
+		$this->assertNotEmpty( $errors );
+
+		$error_items = wp_list_filter( $errors['load.php'][0][0], array( 'code' => 'plugin_header_invalid_requires_wp' ) );
+
+		$this->assertCount( 1, $error_items );
+		$this->assertStringContainsString( 'such as "6.5" or "6.4"', reset( $error_items )['message'] );
+
+		delete_transient( 'wp_plugin_check_latest_version_info' );
+	}
+
 	public function test_run_with_valid_requires_plugins_header() {
 		/*
 		 * Test plugin has following valid header.
