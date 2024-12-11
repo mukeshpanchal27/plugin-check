@@ -14,6 +14,7 @@ use WordPress\Plugin_Check\Checker\Static_Check;
 use WordPress\Plugin_Check\Traits\Amend_Check_Result;
 use WordPress\Plugin_Check\Traits\License_Utils;
 use WordPress\Plugin_Check\Traits\Stable_Check;
+use WordPress\Plugin_Check\Traits\Version_Utils;
 
 /**
  * Check for plugin header fields.
@@ -25,6 +26,7 @@ class Plugin_Header_Fields_Check implements Static_Check {
 	use Amend_Check_Result;
 	use License_Utils;
 	use Stable_Check;
+	use Version_Utils;
 
 	/**
 	 * Gets the categories for the check.
@@ -245,14 +247,17 @@ class Plugin_Header_Fields_Check implements Static_Check {
 
 		if ( ! empty( $plugin_header['RequiresWP'] ) ) {
 			if ( ! preg_match( '!^\d+\.\d(\.\d+)?$!', $plugin_header['RequiresWP'] ) ) {
+				$latest_wp_version   = $this->get_wordpress_stable_version();
+				$previous_wp_version = $this->get_wordpress_relative_major_version( $latest_wp_version, -1 );
+
 				$this->add_result_error_for_file(
 					$result,
 					sprintf(
-						/* translators: 1: plugin header field; 2: Example version 6.5.1. 3: Example version 6.6. */
+						/* translators: 1: plugin header field, 2: Example version 6.7, 3: Example version 6.6 */
 						__( 'The "%1$s" header in the plugin file should only contain a WordPress version such as "%2$s" or "%3$s".', 'plugin-check' ),
 						esc_html( $labels['RequiresWP'] ),
-						'6.5.1',
-						'6.6'
+						esc_html( $latest_wp_version ),
+						esc_html( $previous_wp_version )
 					),
 					'plugin_header_invalid_requires_wp',
 					$plugin_main_file,
