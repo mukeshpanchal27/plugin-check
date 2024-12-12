@@ -247,8 +247,8 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 						$this->add_result_error_for_file(
 							$result,
 							sprintf(
-								/* translators: %s: plugin header tag */
-								__( '<strong>Your readme is either missing or incomplete.</strong><br>The "%s" field is missing. Your readme has to have headers as well as a proper description and documentation as to how it works and how one can use it.', 'plugin-check' ),
+								/* translators: %s: readme header field */
+								__( '<strong>Missing "%s".</strong><br>Your readme has to have headers as well as a proper description and documentation as to how it works and how one can use it.', 'plugin-check' ),
 								$field['label']
 							),
 							'missing_readme_header',
@@ -313,7 +313,11 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 		if ( empty( $license ) ) {
 			$this->add_result_error_for_file(
 				$result,
-				__( '<strong>Your plugin has no license declared.</strong><br>Please update your readme with a GPLv2 (or later) compatible license. It is necessary to declare the license of this plugin. You can do this by using the fields available both in the plugin readme and in the plugin headers.', 'plugin-check' ),
+				sprintf(
+					/* translators: %s: readme header field */
+					__( '<strong>Missing "%s".</strong><br>Please update your readme with a valid GPLv2 (or later) compatible license.', 'plugin-check' ),
+					'License'
+				),
 				'no_license',
 				$readme_file,
 				0,
@@ -380,7 +384,12 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 		if ( empty( $stable_tag ) ) {
 			$this->add_result_error_for_file(
 				$result,
-				__( "<strong>Incorrect Stable Tag.</strong><br>Your Stable Tag is meant to be the stable version of your plugin, not of WordPress. For your plugin to be properly downloaded from WordPress.org, those values need to be the same. If they're out of sync, your users won't get the right version of your code.", 'plugin-check' ),
+				sprintf(
+					/* translators: 1: readme header tag, 2: plugin header tag */
+					__( '<strong>Invalid or missing %1$s.</strong><br>Your %1$s is meant to be the stable version of your plugin and it needs to be exactly the same with the %2$s in your main plugin file\'s header. Any mismatch can prevent users from downloading the correct plugin files from WordPress.org.', 'plugin-check' ),
+					'Stable Tag',
+					'Version'
+				),
 				'no_stable_tag',
 				$readme_file,
 				0,
@@ -395,7 +404,13 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 		if ( 'trunk' === $stable_tag ) {
 			$this->add_result_error_for_file(
 				$result,
-				__( "<strong>Incorrect Stable Tag.</strong><br>It's recommended not to use 'Stable Tag: trunk'. Your Stable Tag is meant to be the stable version of your plugin, not of WordPress. For your plugin to be properly downloaded from WordPress.org, those values need to be the same. If they're out of sync, your users won't get the right version of your code.", 'plugin-check' ),
+				sprintf(
+					/* translators: 1: readme header tag, 2: example tag, 3: plugin header tag */
+					__( '<strong>Incorrect %1$s.</strong><br>It\'s recommended not to use "%2$s". Your %1$s is meant to be the stable version of your plugin and it needs to be exactly the same with the %3$s in your main plugin file\'s header. Any mismatch can prevent users from downloading the correct plugin files from WordPress.org.', 'plugin-check' ),
+					'Stable Tag',
+					'Stable Tag: trunk',
+					'Version'
+				),
 				'trunk_stable_tag',
 				$readme_file,
 				0,
@@ -417,9 +432,11 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 			$this->add_result_error_for_file(
 				$result,
 				sprintf(
-					/* translators: %s: versions comparison */
-					__( "<strong>Mismatched Stable Tag: %s.</strong><br>The Stable Tag in your readme file does not match the version in your main plugin file. Your Stable Tag is meant to be the stable version of your plugin, not of WordPress. For your plugin to be properly downloaded from WordPress.org, those values need to be the same. If they're out of sync, your users won't get the right version of your code.", 'plugin-check' ),
-					esc_html( $stable_tag ) . ' != ' . esc_html( $plugin_data['Version'] )
+					/* translators: 1: readme header tag, 2: versions comparison, 3: plugin header tag */
+					__( '<strong>Mismatched %1$s: %2$s.</strong><br>Your %1$s is meant to be the stable version of your plugin and it needs to be exactly the same with the %3$s in your main plugin file\'s header. Any mismatch can prevent users from downloading the correct plugin files from WordPress.org.', 'plugin-check' ),
+					'Stable Tag',
+					esc_html( $stable_tag ) . ' != ' . esc_html( $plugin_data['Version'] ),
+					'Version'
 				),
 				'stable_tag_mismatch',
 				$readme_file,
