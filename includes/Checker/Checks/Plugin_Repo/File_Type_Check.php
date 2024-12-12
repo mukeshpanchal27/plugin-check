@@ -286,7 +286,7 @@ class File_Type_Check extends Abstract_File_Check {
 			if ( $badly_name ) {
 				$this->add_result_error_for_file(
 					$result,
-					__( 'Badly named files are not permitted.', 'plugin-check' ),
+					__( 'File and folder names must not contain spaces or special characters.', 'plugin-check' ),
 					'badly_named_files',
 					$file,
 					0,
